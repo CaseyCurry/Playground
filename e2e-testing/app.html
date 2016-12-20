@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>POC</title>
+  <script>
+    window.onload = function() {
+      document.getElementById("firstname").addEventListener("change",
+        function() {
+          updateFullName();
+        });
+      document.getElementById("lastname").addEventListener("change",
+        function() {
+          updateFullName();
+        });
+    };
+
+    function updateFullName() {
+      var firstName = document.getElementById("firstname").value;
+      var lastName = document.getElementById("lastname").value;
+      document.getElementById("fullname").innerHTML = firstName + " " + lastName;
+    }
+  </script>
+</head>
+
+<body>
+  <input id="firstname" type="text" />
+  <input id="lastname" type="test" />
+  <span id="fullname"></span>
+</body>
+
+</html>
