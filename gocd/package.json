@@ -1,0 +1,16 @@
+{
+  "name": "gocd",
+  "version": "1.0.0",
+  "description": "Demo project to explore Thoughtworks' GoCD toolset.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha src/unit/**/*.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^3.2.0"
+  }
+}
