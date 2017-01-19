@@ -1,3 +1,7 @@
+Demo general technologies used in the new site.
+This is not necessarily using best practices.
+It's just a demo of the concepts.
+
 angular
 npm
 grunt
