@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato">
+  <!-- include: "type": "css", "files": "**/*.css" -->
+</head>
+
+<body>
+  <div ng-app="app" ng-controller="productsController" />
+  <h1>Products</h1>
+  <input ng-model="newProduct" placeholder="Product Code" />
+  <button ng-click="addProduct()">Add</button>
+  <h2>List</h2>
+  <ul>
+    <li ng-repeat="product in products">
+      {{product}}
+      <button ng-click="removeProduct(product)">remove</button>
+    </li>
+  </ul>
+  <svg>
+    <use viewbox="0 0 32 32" xlink:href="spritesheet.svg#browser-firefox"></use>
+  </svg>
+  <!-- include: "type": "js", "files": "**/*.js" -->
+</body>
+
+</html>

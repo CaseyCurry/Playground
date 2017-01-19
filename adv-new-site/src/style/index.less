@@ -1,0 +1,15 @@
+@import "theme.less";
+
+body {
+  font-family: "Lato", sans-serif;
+  background: @primary-background-color;
+  color: contrast(@primary-background-color, black, white);
+  @media (max-width: 500px) {
+    background: @secondary-background-color;
+    color: contrast(@secondary-background-color, black, white);
+  }
+  @media (orientation: landscape) {
+    background: @fancy-background-color;
+    color: contrast(@fancy-background-color, black, white);
+  }
+}

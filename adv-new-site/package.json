@@ -1,0 +1,30 @@
+{
+  "name": "adv-new-site",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "grunt",
+    "start": "node build/dist/host.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "grunt": "^1.0.1",
+    "grunt-browserify": "^5.0.0",
+    "grunt-contrib-clean": "^1.0.0",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-cssmin": "^1.0.2",
+    "grunt-contrib-less": "^1.4.0",
+    "grunt-contrib-uglify": "^2.0.0",
+    "grunt-include-source": "^1.0.0",
+    "grunt-svgstore": "^1.0.0",
+    "grunt-ts": "^6.0.0-beta.11",
+    "typescript": "^2.1.5"
+  },
+  "dependencies": {
+    "angular": "^1.6.1",
+    "express": "^4.14.0"
+  }
+}
