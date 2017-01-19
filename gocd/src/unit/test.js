@@ -7,4 +7,10 @@ describe("unit test suite", () => {
       .to
       .equal(true);
   });
+
+  it("should run another test", () => {
+    expect(true)
+      .to
+      .equal(true);
+  })
 });
