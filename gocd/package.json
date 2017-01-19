@@ -4,7 +4,7 @@
   "description": "Demo project to explore Thoughtworks' GoCD toolset.",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/.bin/mocha src/unit/**/*.js"
+    "test": "mocha src/unit/**/*.js"
   },
   "keywords": [],
   "author": "",
