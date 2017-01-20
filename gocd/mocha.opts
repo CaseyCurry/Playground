@@ -1,2 +1,2 @@
 src/**/*.js
---reporter doc > ./artifacts/unit-test.html
+--reporter doc
