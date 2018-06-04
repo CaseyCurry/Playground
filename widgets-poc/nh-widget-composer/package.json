@@ -1,0 +1,14 @@
+{
+  "name": "nh-widget-composer",
+  "version": "0.0.1",
+  "description": "This is a package based on https://github.com/hootsuite/grid with nothing more than add and remove functionality added.",
+  "main": "lib/jquery.gridList.js",
+  "scripts": {},
+  "keywords": [],
+  "author": "",
+  "publishConfig": {
+    "registry": "http://localhost:4873/"
+  },
+  "devDependencies": {},
+  "dependencies": {}
+}

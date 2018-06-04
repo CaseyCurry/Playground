@@ -1,0 +1,32 @@
+{
+  "name": "nh-browser-bus",
+  "version": "1.0.10",
+  "description": "",
+  "main": "./lib/bus.js",
+  "module": "./src/bus.js",
+  "scripts": {
+    "coverage": "nyc npm run test",
+    "test": "mocha --opts mocha.opts",
+    "lint": "eslint . --ext .js --ext .jsx --ignore-path .gitignore",
+    "build:dev": "webpack -d",
+    "build:release": "webpack -p"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.4",
+    "babel-preset-es2015": "^6.24.1",
+    "chai": "^4.1.2",
+    "cors": "^2.8.4",
+    "eslint": "^4.19.1",
+    "eslint-loader": "^2.0.0",
+    "express": "^4.16.3",
+    "mocha": "^5.2.0",
+    "nyc": "^11.8.0",
+    "webpack": "^4.9.1",
+    "webpack-cli": "^2.1.4"
+  },
+  "dependencies": {}
+}

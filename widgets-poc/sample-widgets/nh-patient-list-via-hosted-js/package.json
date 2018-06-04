@@ -1,0 +1,17 @@
+{
+  "name": "patient-widget-hosted-js",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "host": "PORT=9100 node ./src/host.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.4",
+    "express": "^4.16.3",
+    "nh-browser-bus": "^1.0.10"
+  }
+}
