@@ -117,7 +117,7 @@ $(function() {
 
   const widgets = Object.keys(window)
     .filter(x => x.indexOf("nhWidget") >= 0)
-    .map(x => window[x]);
+    .map(x => Object.assign({}, { key: x }, window[x]));
 
   $grid.gridList({
     lanes: lanes,
@@ -139,6 +139,7 @@ $(function() {
       panel.style.left = e.clientX + "px";
       widgets.forEach(x => {
         const widget = document.createElement("div");
+        widget.id = x.key;
         widget.className = "widgetItem";
         widget.innerHTML = x.metadata.title;
         widget.addEventListener("click", function(e) {
