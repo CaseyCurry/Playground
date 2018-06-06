@@ -1,6 +1,68 @@
 "use strict";
 
-Element.prototype.makeDraggable = function(conditionsToBeginMoveMet, afterMoveCallback) {
+Element.prototype.addSpacers = function() {
+  let hoveredSpacer;
+
+  const createSpacer = function() {
+    const spacer = document.createElement("div");
+    spacer.classList.add("spacer");
+    spacer.classList.add("col-12");
+    let timeout = false;
+
+    spacer.addEventListener("mouseover", function() {
+      timeout = setTimeout(function() {
+        console.log("hovering");
+      }, 250);
+    });
+    spacer.addEventListener("mouseout", function() {
+      window.clearTimeout(timeout);
+    });
+    return spacer;
+  };
+
+  const clearSpacers = function() {
+    const existingSpacers = Array
+      .from(this.children)
+      .filter(x => x.classList.contains("spacer"));
+    existingSpacers.forEach(x => {
+      x.remove();
+    });
+  }.bind(this);
+
+  clearSpacers();
+  const widgets = Array.from(this.children);
+
+  let spacer = createSpacer();
+  this.insertBefore(spacer, widgets[0]);
+
+  const maxRowWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+  let usedWidthOnRow = 0;
+
+  widgets.forEach(function(x) {
+    usedWidthOnRow += x.offsetWidth;
+
+    if (usedWidthOnRow >= maxRowWidth) {
+      spacer = createSpacer();
+      this.insertBefore(spacer, x);
+
+      if (usedWidthOnRow === maxRowWidth) {
+        this.insertBefore(x, spacer);
+        usedWidthOnRow = 0;
+      } else {
+        usedWidthOnRow = x.offsetWidth;
+      }
+    }
+  }.bind(this));
+
+  spacer = createSpacer();
+  this.insertBefore(spacer, null);
+
+  for (let i = 0; i < this.children.length; i++) {
+    this.children[i].style.order = i;
+  }
+};
+
+Element.prototype.makeDraggable = function(conditionsToBeginMoveMet) {
   const getWidgetList = function() {
     return document.getElementsByClassName("widgets")[0];
   }
@@ -72,12 +134,22 @@ Element.prototype.makeDraggable = function(conditionsToBeginMoveMet, afterMoveCa
     const position = getUserPosition(e);
     this.style.left = (position.x - this.dragStart.x) + "px";
     this.style.top = (position.y - this.dragStart.y) + "px";
+
+    // spacer
+    // const currentResident = document.elementFromPoint(position.x, position.y);
+    //
+    // if (currentResident.classList.contains("spacer")) {
+    //   console.log("on spacer");
+    // }
   }.bind(this);
 
   const endMove = function(e) {
     const widgetList = getWidgetList();
     const position = getUserPosition(e);
     const currentResident = document.elementFromPoint(position.x, position.y);
+
+    // is it a spacer?
+
     let widgetToMove = getWidget(currentResident);
 
     if (!widgetToMove) {
@@ -112,7 +184,7 @@ Element.prototype.makeDraggable = function(conditionsToBeginMoveMet, afterMoveCa
       widgetList.removeChild(placeholder);
     }
 
-    afterMoveCallback();
+    widgetList.addSpacers();
 
     this.classList.remove("draggable");
     this.style.top = this.initialPosition.top;
