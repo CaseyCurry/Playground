@@ -27,7 +27,6 @@ const addSpacers = function() {
 
   widgets.forEach(function(x) {
     usedWidthOnRow += x.offsetWidth;
-    console.log(maxRowWidth, x.offsetWidth, usedWidthOnRow);
 
     if (usedWidthOnRow >= maxRowWidth) {
       spacer = createSpacer();
@@ -52,20 +51,20 @@ const addSpacers = function() {
 
 const getResponsiveBreakpoint = function() {
   const breakpoints = {
-    xs: "d-none",
-    sm: "d-sm-none",
-    md: "d-md-none",
+    xl: "d-xl-none",
     lg: "d-lg-none",
-    xl: "d-xl-none"
+    md: "d-md-none",
+    sm: "d-sm-none",
+    xs: "d-none"
   };
   let breakpoint = "";
 
   const marker = document.createElement("div");
   document.getElementsByTagName("body")[0].appendChild(marker);
+  const sizes = Object.keys(breakpoints);
 
-  for (var i = Object.keys(breakpoints)
-      .length - 1; i >= 0; i--) {
-    breakpoint = Object.keys(breakpoints)[i];
+  for (let i = 0; i < sizes.length; i++) {
+    breakpoint = sizes[i];
     marker.classList.add(breakpoints[breakpoint]);
     const style = window.getComputedStyle(marker);
     if (style.display === "none") {
@@ -76,6 +75,33 @@ const getResponsiveBreakpoint = function() {
   marker.remove();
   return breakpoint;
 };
+
+// const getResponsiveBreakpoint = function() {
+//   const breakpoints = {
+//     xs: "d-none",
+//     sm: "d-sm-none",
+//     md: "d-md-none",
+//     lg: "d-lg-none",
+//     xl: "d-xl-none"
+//   };
+//   let breakpoint = "";
+//
+//   const marker = document.createElement("div");
+//   document.getElementsByTagName("body")[0].appendChild(marker);
+//
+//   for (var i = Object.keys(breakpoints)
+//       .length - 1; i >= 0; i--) {
+//     breakpoint = Object.keys(breakpoints)[i];
+//     marker.classList.add(breakpoints[breakpoint]);
+//     const style = window.getComputedStyle(marker);
+//     if (style.display === "none") {
+//       break;
+//     }
+//   }
+//
+//   marker.remove();
+//   return breakpoint;
+// };
 
 let breakpoint;
 
