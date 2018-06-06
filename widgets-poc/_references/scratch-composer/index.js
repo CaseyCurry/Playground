@@ -1,7 +1,5 @@
 "use strict";
 
-xxx
-
 const createSpacer = function() {
   const spacer = document.createElement("div");
   spacer.classList.add("spacer");
