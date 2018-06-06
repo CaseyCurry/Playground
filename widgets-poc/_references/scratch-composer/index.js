@@ -53,18 +53,29 @@ const createWidget = function(className, height, innerHTML) {
   widget.appendChild(container);
 
   const widgetControls = document.createElement("div");
+  container.appendChild(widgetControls);
   widgetControls.className = "controls";
+
   const minimizeToggle = document.createElement("span");
+  widgetControls.appendChild(minimizeToggle);
   minimizeToggle.innerHTML = "x";
   minimizeToggle.className = "minimize-toggle";
-  widgetControls.appendChild(minimizeToggle);
-  container.appendChild(widgetControls);
+  minimizeToggle.setAttribute("data-not-draggable", true);
+
+  const fullWidthOption = document.createElement("span");
+  widgetControls.appendChild(fullWidthOption);
+  fullWidthOption.innerHTML = "->";
+  fullWidthOption.setAttribute("data-not-draggable", true);
+  fullWidthOption.addEventListener("click", function() {
+    widget.makeFullWidth();
+    widgetsList.addSpacers();
+  });
 
   const content = document.createElement("div");
+  container.appendChild(content);
   content.className = "content";
   content.innerHTML = innerHTML;
   content.style.height = height;
-  container.appendChild(content);
 
   minimizeToggle.addEventListener("click", toggleContent.bind(content));
 
@@ -86,15 +97,9 @@ const widgets = [
 ];
 
 const widgetsList = document.getElementsByClassName("widgets")[0];
-const conditionsToBeginMoveMet = function(e) {
-  if (e.target.classList.contains("minimize-toggle")) {
-    return false;
-  }
-  return true;
-};
 
 widgets.forEach(x => {
-  x.makeDraggable(conditionsToBeginMoveMet);
+  x.makeDraggable();
   widgetsList.appendChild(x);
 });
 

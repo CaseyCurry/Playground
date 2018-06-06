@@ -1,21 +1,63 @@
 "use strict";
 
-Element.prototype.addSpacers = function() {
-  let hoveredSpacer;
+const cssClasses = {
+  widgets: "widgets",
+  widget: "widget",
+  placeholder: "placeholder",
+  draggable: "draggable",
+  noHighlighting: "no-highlighting",
+  spacer: "spacer",
+  spacerSizeOptions: "size-options",
+  fullWidth: "col-12",
+  bootstrapPrefix: "col-"
+};
 
+Element.prototype.makeFullWidth = function() {
+  console.log(this);
+  Array
+    .from(this.classList)
+    .forEach(x => {
+      if (x.indexOf(cssClasses.bootstrapPrefix) === 0) {
+        this.classList.remove(x);
+      }
+    });
+  this.classList.add(cssClasses.fullWidth);
+}
+
+Element.prototype.addSpacers = function() {
   const createSpacer = function() {
     const spacer = document.createElement("div");
-    spacer.classList.add("spacer");
-    spacer.classList.add("col-12");
-    let timeout = false;
+    spacer.classList.add(cssClasses.spacer);
+    spacer.classList.add(cssClasses.fullWidth);
 
-    spacer.addEventListener("mouseover", function() {
-      timeout = setTimeout(function() {
-        console.log("hovering");
-      }, 250);
+    let timeout = false;
+    let sizeOptions = false;
+
+    spacer.addEventListener("mouseover", function(e) {
+      if (!sizeOptions) {
+        timeout = setTimeout(function() {
+          sizeOptions = document.createElement("div");
+          sizeOptions.classList.add(cssClasses.spacerSizeOptions);
+          spacer.appendChild(sizeOptions);
+        }, 250);
+      }
     });
-    spacer.addEventListener("mouseout", function() {
-      window.clearTimeout(timeout);
+
+    spacer.addEventListener("mouseout", function(event) {
+      // Skip if mouse is moved to a child of the spacer.
+      const e = event.toElement || event.relatedTarget;
+      if (e) {
+        if (e.parentNode == this || e == this) {
+          return;
+        }
+      }
+      if (timeout) {
+        window.clearTimeout(timeout);
+      }
+      if (sizeOptions) {
+        sizeOptions.remove();
+        sizeOptions = null;
+      }
     });
     return spacer;
   };
@@ -23,7 +65,7 @@ Element.prototype.addSpacers = function() {
   const clearSpacers = function() {
     const existingSpacers = Array
       .from(this.children)
-      .filter(x => x.classList.contains("spacer"));
+      .filter(x => x.classList.contains(cssClasses.spacer));
     existingSpacers.forEach(x => {
       x.remove();
     });
@@ -54,17 +96,21 @@ Element.prototype.addSpacers = function() {
     }
   }.bind(this));
 
-  spacer = createSpacer();
-  this.insertBefore(spacer, null);
+  const lastChild = this.children[this.children - 1];
+
+  if (lastChild && !lastChild.classList.contains(cssClasses.spacer)) {
+    spacer = createSpacer();
+    this.insertBefore(spacer, null);
+  }
 
   for (let i = 0; i < this.children.length; i++) {
     this.children[i].style.order = i;
   }
 };
 
-Element.prototype.makeDraggable = function(conditionsToBeginMoveMet) {
+Element.prototype.makeDraggable = function() {
   const getWidgetList = function() {
-    return document.getElementsByClassName("widgets")[0];
+    return document.getElementsByClassName(cssClasses.widgets)[0];
   }
 
   const getUserPosition = function(e) {
@@ -81,10 +127,20 @@ Element.prototype.makeDraggable = function(conditionsToBeginMoveMet) {
     if (!element) {
       return;
     }
-    const widget = element.classList.contains("widget") ?
+    const widget = element.classList.contains(cssClasses.widget) ?
       element :
-      element.closest(".widget");
+      element.closest("." + cssClasses.widget);
     return widget;
+  };
+
+  const getSpacer = function(element) {
+    if (!element) {
+      return;
+    }
+    const spacer = element.classList.contains(cssClasses.spacer) ?
+      element :
+      element.closest("." + cssClasses.spacer);
+    return spacer;
   };
 
   const isWidgetMovedUp = function(widgetToMove) {
@@ -113,10 +169,9 @@ Element.prototype.makeDraggable = function(conditionsToBeginMoveMet) {
       top: this.style.top,
       left: this.style.left
     };
-    document.body.classList.add("no-highlighting");
+    document.body.classList.add(cssClasses.noHighlighting);
     const placeholder = this.cloneNode(false);
-    placeholder.id = "placeholder";
-    placeholder.classList.add("placeholder");
+    placeholder.classList.add(cssClasses.placeholder);
     placeholder.style.height = this.offsetHeight + "px";
     const widgetList = getWidgetList();
     this.dragStart = {
@@ -127,70 +182,67 @@ Element.prototype.makeDraggable = function(conditionsToBeginMoveMet) {
     this.style.left = (position.x - this.dragStart.x) + "px";
     this.style.top = (position.y - this.dragStart.y) + "px";
     widgetList.insertBefore(placeholder, this);
-    this.classList.add("draggable");
+    this.classList.add(cssClasses.draggable);
   }.bind(this);
 
   const move = function(e) {
     const position = getUserPosition(e);
     this.style.left = (position.x - this.dragStart.x) + "px";
     this.style.top = (position.y - this.dragStart.y) + "px";
-
-    // spacer
-    // const currentResident = document.elementFromPoint(position.x, position.y);
-    //
-    // if (currentResident.classList.contains("spacer")) {
-    //   console.log("on spacer");
-    // }
   }.bind(this);
 
   const endMove = function(e) {
     const widgetList = getWidgetList();
     const position = getUserPosition(e);
     const currentResident = document.elementFromPoint(position.x, position.y);
+    const spacer = getSpacer(currentResident);
 
-    // is it a spacer?
+    if (spacer) {
+      widgetList.insertBefore(this, spacer);
+      this.makeFullWidth();
+    } else {
+      let widgetToMove = getWidget(currentResident);
 
-    let widgetToMove = getWidget(currentResident);
-
-    if (!widgetToMove) {
-      let widgets = Array.from(document.getElementsByClassName("widget"));
-      widgets = widgets.filter(function(x) {
-        return !x.classList.contains("placeholder");
-      });
-      for (let i = 0; i < widgets.length; i++) {
-        const bounds = widgets[i].getBoundingClientRect();
-        if (bounds.y > position.y) {
-          widgetToMove = widgets[i];
-          break;
+      if (!widgetToMove) {
+        let widgets = Array.from(document.getElementsByClassName(cssClasses.widget));
+        widgets = widgets.filter(function(x) {
+          return !x.classList.contains(cssClasses.placeholder);
+        });
+        for (let i = 0; i < widgets.length; i++) {
+          const bounds = widgets[i].getBoundingClientRect();
+          if (bounds.y > position.y) {
+            widgetToMove = widgets[i];
+            break;
+          }
+        }
+        if (!widgetToMove) {
+          widgetToMove = widgets[widgets.length - 1];
         }
       }
-      if (!widgetToMove) {
-        widgetToMove = widgets[widgets.length - 1];
+
+      if (widgetToMove) {
+        if (isWidgetMovedUp(widgetToMove)) {
+          widgetList.insertBefore(this, widgetToMove);
+        } else {
+          widgetList.insertBefore(this, widgetToMove);
+          widgetList.insertBefore(widgetToMove, this);
+        }
       }
     }
 
-    if (widgetToMove) {
-      if (isWidgetMovedUp(widgetToMove)) {
-        widgetList.insertBefore(this, widgetToMove);
-      } else {
-        widgetList.insertBefore(this, widgetToMove);
-        widgetList.insertBefore(widgetToMove, this);
-      }
-    }
+    const placeholders = document.getElementsByClassName(cssClasses.placeholder);
 
-    const placeholder = document.getElementById("placeholder");
-
-    if (placeholder) {
-      widgetList.removeChild(placeholder);
+    if (placeholders) {
+      widgetList.removeChild(placeholders[0]);
     }
 
     widgetList.addSpacers();
 
-    this.classList.remove("draggable");
+    this.classList.remove(cssClasses.draggable);
     this.style.top = this.initialPosition.top;
     this.style.left = this.initialPosition.left;
 
-    document.body.classList.remove("no-highlighting");
+    document.body.classList.remove(cssClasses.noHighlighting);
 
     document.removeEventListener("mousemove", move);
     document.removeEventListener("mouseup", endMove);
@@ -198,8 +250,15 @@ Element.prototype.makeDraggable = function(conditionsToBeginMoveMet) {
     document.removeEventListener("touchend", endMove);
   }.bind(this);
 
+  const conditionsToBeginMoveMet = function(e) {
+    if (e.target.dataset.notDraggable) {
+      return false;
+    }
+    return true;
+  }
+
   this.addEventListener("mousedown", function(e) {
-    if (conditionsToBeginMoveMet && !conditionsToBeginMoveMet(e)) {
+    if (!conditionsToBeginMoveMet(e)) {
       return;
     }
     startMove(e);
@@ -208,7 +267,7 @@ Element.prototype.makeDraggable = function(conditionsToBeginMoveMet) {
   }.bind(this));
 
   this.addEventListener("touchstart", function(e) {
-    if (conditionsToBeginMoveMet && !conditionsToBeginMoveMet(e)) {
+    if (!conditionsToBeginMoveMet(e)) {
       return;
     }
     startMove(e);
