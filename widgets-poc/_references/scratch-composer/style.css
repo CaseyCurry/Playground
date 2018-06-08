@@ -4,19 +4,21 @@ html, body {
   background: lightgray;
 }
 
-.widgets {
-  list-style-type: none;
-}
+.widgets {}
 
 .widget {
   padding: 0;
+}
+
+.widget.out-of-focus {
+  opacity: .5;
 }
 
 .widget>div {
   height: 100%;
   margin-left: 10px;
   margin-right: 10px;
-  background-color: white;
+  background: white;
 }
 
 .controls {
@@ -34,8 +36,12 @@ html, body {
   padding: 5px 10px 5px 10px;
 }
 
+.placeholder>div {
+  background: darkgray;
+}
+
 .size-options {
-  height: 10px;
+  height: 100%;
   background: darkgray;
 }
 
@@ -62,11 +68,6 @@ html, body {
 
 .draggable-hide {
   display: none !important;
-}
-
-.placeholder {
-  background-color: lightgray;
-  border: solid 1px lightgray;
 }
 
 .no-highlighting {

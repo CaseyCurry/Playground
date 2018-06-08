@@ -33,7 +33,7 @@ window.addEventListener("resize", () => {
   const currentBreakpoint = getResponsiveBreakpoint();
   if (currentBreakpoint != breakpoint) {
     breakpoint = currentBreakpoint;
-    widgetsList.addSpacers();
+    widgetList.addSpacers();
   }
 });
 
@@ -45,9 +45,11 @@ const toggleContent = function() {
   }
 };
 
-const createWidget = function(className, height, innerHTML) {
+const createWidget = function(className, height, innerHTML, minWidth) {
   const widget = document.createElement("div");
   widget.className = "widget " + className;
+  widget.setAttribute("data-minimum-width", minWidth);
+  widget.setAttribute("data-current-width", minWidth);
 
   const container = document.createElement("div");
   widget.appendChild(container);
@@ -68,7 +70,7 @@ const createWidget = function(className, height, innerHTML) {
   fullWidthOption.setAttribute("data-not-draggable", true);
   fullWidthOption.addEventListener("click", function() {
     widget.makeFullWidth();
-    widgetsList.addSpacers();
+    widgetList.addSpacers();
   });
 
   const content = document.createElement("div");
@@ -84,23 +86,20 @@ const createWidget = function(className, height, innerHTML) {
 
 const firstContent = "<div style='width:50%;display:inline-block'>1A</div>" +
   "<div style='width:50%;display:inline-block'>1B</div>";
-const first = createWidget("col-md-6 col-xs-12", "100px", firstContent);
-const second = createWidget("col-md-6 col-xs-12", "200px", "2");
-const third = createWidget("col-md-4 col-xs-12", "50px", "3");
-const fourth = createWidget("col-md-8 col-xs-12", "50px", "4");
 
 const widgets = [
-  first,
-  second,
-  third,
-  fourth
+  createWidget("col-12", "100px", "1", 12),
+  createWidget("col-md-6 col-xs-12", "200px", firstContent, 6),
+  createWidget("col-md-6 col-xs-12", "200px", "2", 6),
+  createWidget("col-md-4 col-xs-12", "50px", "3", 4),
+  createWidget("col-md-8 col-xs-12", "50px", "4", 8)
 ];
 
-const widgetsList = document.getElementsByClassName("widgets")[0];
+const widgetList = document.getElementsByClassName("widgets")[0];
 
 widgets.forEach(x => {
   x.makeDraggable();
-  widgetsList.appendChild(x);
+  widgetList.appendChild(x);
 });
 
-widgetsList.addSpacers();
+widgetList.addSpacers();
