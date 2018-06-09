@@ -33,7 +33,7 @@ window.addEventListener("resize", () => {
   const currentBreakpoint = getResponsiveBreakpoint();
   if (currentBreakpoint != breakpoint) {
     breakpoint = currentBreakpoint;
-    widgetList.addSpacers();
+    widgetList.addHorizontalSpacers();
   }
 });
 
@@ -70,7 +70,7 @@ const createWidget = function(className, height, innerHTML, minWidth) {
   fullWidthOption.setAttribute("data-not-draggable", true);
   fullWidthOption.addEventListener("click", function() {
     widget.makeFullWidth();
-    widgetList.addSpacers();
+    widgetList.addHorizontalSpacers();
   });
 
   const content = document.createElement("div");
@@ -102,4 +102,4 @@ widgets.forEach(x => {
   widgetList.appendChild(x);
 });
 
-widgetList.addSpacers();
+widgetList.addHorizontalSpacers();
