@@ -37,13 +37,9 @@ html, body {
 }
 
 .placeholder>div {
-  background: darkgray;
-  opacity: .5;
-}
-
-.size-options {
   height: 100%;
   background: darkgray;
+  opacity: .5;
 }
 
 .minimized {

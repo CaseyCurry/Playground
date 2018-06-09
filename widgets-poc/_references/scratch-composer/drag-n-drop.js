@@ -9,7 +9,6 @@ const cssClasses = {
   draggable: "draggable",
   noHighlighting: "no-highlighting",
   spacer: "spacer",
-  spacerSizeOptions: "size-options",
   fullWidth: "col-12",
   bootstrapPrefix: "col-"
 };
@@ -18,8 +17,6 @@ const maximumWidth = 12;
 
 let draggingWidget;
 
-let alreadyHoveringOverPlaceholder = false;
-
 // </editor-fold>
 
 // <editor-fold> widget locators
@@ -27,33 +24,6 @@ let alreadyHoveringOverPlaceholder = false;
 const getWidgetsContainer = function() {
   return document.getElementsByClassName(cssClasses.widgets)[0];
 }
-
-Element.prototype.getClosestWidgetUsingBounds = function(userPosition, draggingWidget) {
-  let widgetToMove;
-  const widgets = Array
-    .from(this.children)
-    .filter(function(x) {
-      return x.classList.contains(cssClasses.widget) &&
-        !x.classList.contains(cssClasses.placeholder) &&
-        x !== draggingWidget;
-    });
-  for (let i = 0; i < widgets.length; i++) {
-    const bounds = widgets[i].getBoundingClientRect();
-
-    // Is the widgets[i] immediately after the user's position? If so, this is
-    // the one we're looking for.
-    if (userPosition.x < bounds.left &&
-      bounds.top <= userPosition.y &&
-      bounds.bottom >= userPosition.y ||
-      userPosition.y < bounds.top &&
-      bounds.left <= userPosition.x &&
-      bounds.right >= userPosition.x) {
-      widgetToMove = widgets[i];
-      break;
-    }
-  }
-  return widgetToMove;
-};
 
 // </editor-fold>
 
@@ -64,7 +34,11 @@ const clearPlaceholders = function() {
 
   Array.from(placeholders)
     .forEach(x => {
-      x.remove();
+      if (x.classList.contains(cssClasses.spacer)) {
+        x.classList.remove(cssClasses.placeholder);
+      } else {
+        x.remove();
+      }
     });
 };
 
@@ -77,27 +51,6 @@ const createPlaceholder = function(template) {
   placeholder.style.height = template.offsetHeight + "px";
   const content = document.createElement("div");
   placeholder.appendChild(content);
-
-  const leaveHover = (event) => {
-    const e = event.toElement || event.relatedTarget;
-    if (e) {
-      if (e.parentNode == this || e == this) {
-        return;
-      }
-    }
-    placeholder.remove();
-    const widgetsContainer = getWidgetsContainer();
-    widgetsContainer.addHorizontalSpacers();
-    alreadyHoveringOverPlaceholder = false;
-  };
-  const endHover = () => {
-    alreadyHoveringOverPlaceholder = false;
-  };
-  placeholder.addEventListener("mouseleave", leaveHover);
-  placeholder.addEventListener("touchleave", leaveHover);
-  placeholder.addEventListener("mouseup", endHover);
-  placeholder.addEventListener("touchend", endHover);
-
   return placeholder;
 };
 
@@ -105,12 +58,11 @@ Element.prototype.configureDropPlaceholder = function() {
   let timeout = false;
 
   const startHover = () => {
-    if (alreadyHoveringOverPlaceholder || !draggingWidget) {
+    if (!draggingWidget) {
       return;
     }
     timeout = setTimeout(() => {
       if (!draggingWidget) {
-        console.log("draggingWidget is falsey");
         return;
       }
 
@@ -141,41 +93,21 @@ Element.prototype.configureDropPlaceholder = function() {
       const targetIsSpacer = this.classList.contains(cssClasses.spacer);
 
       if (targetIsSpacer) {
-        alreadyHoveringOverPlaceholder = true;
-
         clearPlaceholders();
         const placeholder = document.createElement("div");
-        placeholder.classList.add(cssClasses.spacerSizeOptions);
-
-        const leaveHover = () => {
-          placeholder.remove();
-          alreadyHoveringOverPlaceholder = false;
-        };
-        const endHover = () => {
-          alreadyHoveringOverPlaceholder = false;
-        };
-        placeholder.addEventListener("mouseleave", leaveHover);
-        placeholder.addEventListener("touchleave", leaveHover);
-        placeholder.addEventListener("mouseup", endHover);
-        placeholder.addEventListener("touchend", endHover);
-
+        this.classList.add(cssClasses.placeholder);
         this.appendChild(placeholder);
-      } else if (targetHasRoom || targetCouldMakeRoom) {
-        alreadyHoveringOverPlaceholder = true;
-
-        this.setAttribute("data-restore-width", this.dataset.currentWidth);
-
+      } else {
         clearPlaceholders();
         const placeholder = createPlaceholder(draggingWidget);
         const widgetsContainer = getWidgetsContainer();
         widgetsContainer.insertBefore(placeholder, this);
-
         widgetsContainer.addHorizontalSpacers();
       }
-    }, 200);
+    }, 100);
   };
 
-  const endMove = () => {
+  const leaveHover = () => {
     if (timeout) {
       window.clearTimeout(timeout);
     }
@@ -184,8 +116,8 @@ Element.prototype.configureDropPlaceholder = function() {
   this.addEventListener("mouseenter", startHover);
   this.addEventListener("touchenter", startHover);
 
-  this.addEventListener("mouseup", endMove);
-  this.addEventListener("touchend", endMove);
+  this.addEventListener("mouseleave", leaveHover);
+  this.addEventListener("touchleave", leaveHover);
 };
 
 // </editor-fold>
@@ -257,9 +189,7 @@ Element.prototype.addHorizontalSpacers = function() {
 
   const resetOrderOfChildren = () => {
     for (let i = 0; i < this.children.length; i++) {
-      // if (!this.children[i].classList.contains(cssClasses.draggable)) {
       this.children[i].style.order = i;
-      // }
     }
   };
 
@@ -339,26 +269,6 @@ Element.prototype.makeDraggable = function() {
     return true;
   }
 
-  const getSpacer = function(droppedOnElement) {
-    if (!droppedOnElement) {
-      return;
-    }
-    const spacer = droppedOnElement.classList.contains(cssClasses.spacer) ?
-      droppedOnElement :
-      droppedOnElement.closest("." + cssClasses.spacer);
-    return spacer;
-  };
-
-  const getWidgetToMove = function(droppedOnElement) {
-    if (!droppedOnElement) {
-      return;
-    }
-    const widget = droppedOnElement.classList.contains(cssClasses.widget) ?
-      droppedOnElement :
-      droppedOnElement.closest("." + cssClasses.widget);
-    return widget;
-  };
-
   // </editor-fold>
 
   // <editor-fold> move handlers
@@ -366,20 +276,22 @@ Element.prototype.makeDraggable = function() {
   const startMove = function(e) {
     draggingWidget = this;
 
+    // We'll reset this.style when we call endMove.
     this.initialPosition = {
       top: this.style.top,
       left: this.style.left
     };
 
+    // Prevent highlighting as the user is dragging.
     document.body.classList.add(cssClasses.noHighlighting);
 
-    const placeholder = createPlaceholder(this);
-
+    // Make widgets not being dragged less prominent.
     const widgetsContainer = getWidgetsContainer();
     Array.from(widgetsContainer.children)
       .filter(x => x != this)
       .forEach(x => x.classList.add("out-of-focus"));
 
+    // Make the dragging widget follow the user's movement.
     const userPosition = getUserPosition(e);
     this.dragStart = {
       x: e.touches ? e.touches[0].pageX - this.offsetLeft : e.pageX - this.offsetLeft,
@@ -387,42 +299,30 @@ Element.prototype.makeDraggable = function() {
     };
     this.style.left = (userPosition.x - this.dragStart.x) + "px";
     this.style.top = (userPosition.y - this.dragStart.y) + "px";
-
     this.classList.add(cssClasses.draggable);
 
+    // Add an initial placeholder in case the user immediately abandons the drag.
+    const placeholder = createPlaceholder(this);
     widgetsContainer.insertBefore(placeholder, this);
   }.bind(this);
 
   const move = function(e) {
+    // Make the dragging widget follow the user's movement.
     const userPosition = getUserPosition(e);
     this.style.left = (userPosition.x - this.dragStart.x) + "px";
     this.style.top = (userPosition.y - this.dragStart.y) + "px";
   }.bind(this);
 
   const endMove = function(e) {
-    const userPosition = getUserPosition(e);
-    const droppedOnElement = document.elementFromPoint(userPosition.x, userPosition.y);
-    const droppedOnSpacer = getSpacer(droppedOnElement);
     const widgetsContainer = getWidgetsContainer();
 
-    if (droppedOnSpacer) {
-      widgetsContainer.insertBefore(this, droppedOnSpacer);
-      this.makeFullWidth();
-    } else {
-      let widgetToMove = getWidgetToMove(droppedOnElement);
-
-      if (!widgetToMove) {
-        widgetToMove = widgetsContainer.getClosestWidgetUsingBounds(userPosition, this);
-      }
-
-      // If we found a widgetToMove, insert the dragging widget before it.
-      if (widgetToMove) {
-        widgetsContainer.insertBefore(this, widgetToMove);
-      } else {
-        // Otherwise, just move the dragging widget to the end of the container.
-        const lastWidget = widgetsContainer.children[widgetsContainer.children.length - 1];
-        widgetsContainer.insertBefore(this, lastWidget);
-        widgetsContainer.insertBefore(lastWidget, this);
+    // Find and replace the placeholder with the widget.
+    const placeholders = document.getElementsByClassName(cssClasses.placeholder);
+    if (placeholders.length) {
+      const placeholder = placeholders[0];
+      widgetsContainer.insertBefore(this, placeholder);
+      if (placeholder.classList.contains(cssClasses.spacer)) {
+        this.makeFullWidth();
       }
     }
 
@@ -464,6 +364,7 @@ Element.prototype.makeDraggable = function() {
       return;
     }
     startMove(e);
+    // Make sure these listeners are removed in endMove.
     document.addEventListener("mousemove", move);
     document.addEventListener("mouseup", endMove);
   }.bind(this));
@@ -473,6 +374,7 @@ Element.prototype.makeDraggable = function() {
       return;
     }
     startMove(e);
+    // Make sure these listeners are removed in endMove.
     document.addEventListener("touchmove", move);
     document.addEventListener("touchend", endMove);
   }.bind(this));
