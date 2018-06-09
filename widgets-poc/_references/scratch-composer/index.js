@@ -33,7 +33,7 @@ window.addEventListener("resize", () => {
   const currentBreakpoint = getResponsiveBreakpoint();
   if (currentBreakpoint != breakpoint) {
     breakpoint = currentBreakpoint;
-    widgetList.addHorizontalSpacers();
+    widgetsContainer.addHorizontalSpacers();
   }
 });
 
@@ -60,17 +60,35 @@ const createWidget = function(className, height, innerHTML, minWidth) {
 
   const minimizeToggle = document.createElement("span");
   widgetControls.appendChild(minimizeToggle);
-  minimizeToggle.innerHTML = "x";
+  minimizeToggle.innerHTML = "min/max &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
   minimizeToggle.className = "minimize-toggle";
   minimizeToggle.setAttribute("data-not-draggable", true);
 
   const fullWidthOption = document.createElement("span");
   widgetControls.appendChild(fullWidthOption);
-  fullWidthOption.innerHTML = "->";
+  fullWidthOption.innerHTML = "full width &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
   fullWidthOption.setAttribute("data-not-draggable", true);
   fullWidthOption.addEventListener("click", function() {
     widget.makeFullWidth();
-    widgetList.addHorizontalSpacers();
+    widgetsContainer.addHorizontalSpacers();
+  });
+
+  const moveToBottom = document.createElement("span");
+  widgetControls.appendChild(moveToBottom);
+  moveToBottom.innerHTML = "move to bottom &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+  moveToBottom.setAttribute("data-not-draggable", true);
+  moveToBottom.addEventListener("click", function() {
+    widget.moveToBottom();
+    widgetsContainer.addHorizontalSpacers();
+  });
+
+  const moveToTop = document.createElement("span");
+  widgetControls.appendChild(moveToTop);
+  moveToTop.innerHTML = "move to top &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
+  moveToTop.setAttribute("data-not-draggable", true);
+  moveToTop.addEventListener("click", function() {
+    widget.moveToTop();
+    widgetsContainer.addHorizontalSpacers();
   });
 
   const content = document.createElement("div");

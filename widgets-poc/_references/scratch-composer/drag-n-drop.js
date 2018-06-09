@@ -27,7 +27,7 @@ const getWidgetsContainer = function() {
 
 // </editor-fold>
 
-// <editor-fold> not used for now
+// <editor-fold> grid
 
 Element.prototype.makeGrid = function() {
   const grid = [];
@@ -90,6 +90,23 @@ Element.prototype.makeFullWidth = function() {
 
 // </editor-fold>
 
+// <editor-fold> location modifiers
+
+Element.prototype.moveToBottom = function() {
+  const widgetsContainer = getWidgetsContainer();
+  widgetsContainer.insertBefore(this, null);
+};
+
+Element.prototype.moveToTop = function() {
+  const widgetsContainer = getWidgetsContainer();
+
+  if (widgetsContainer.children.length > 1) {
+    widgetsContainer.insertBefore(this, widgetsContainer.children[0]);
+  }
+};
+
+// </editor-fold>
+
 // <editor-fold> spacers
 
 Element.prototype.addHorizontalSpacers = function() {
@@ -100,7 +117,8 @@ Element.prototype.addHorizontalSpacers = function() {
     const spacer = document.createElement("div");
     spacer.classList.add(cssClasses.spacer);
     spacer.classList.add(cssClasses.fullWidth);
-    spacer.configureDropPlaceholder();
+    const isSpacer = true;
+    spacer.configureDropPlaceholder(isSpacer);
     return spacer;
   };
 
@@ -178,11 +196,7 @@ const clearPlaceholders = function() {
 
   Array.from(placeholders)
     .forEach(x => {
-      if (x.classList.contains(cssClasses.spacer)) {
-        x.classList.remove(cssClasses.placeholder);
-      } else {
-        x.remove();
-      }
+      x.remove();
     });
 };
 
@@ -198,7 +212,7 @@ const createPlaceholder = function(template) {
   return placeholder;
 };
 
-Element.prototype.configureDropPlaceholder = function() {
+Element.prototype.configureDropPlaceholder = function(isSpacer) {
   let timeout = false;
 
   const startHover = () => {
@@ -234,21 +248,23 @@ Element.prototype.configureDropPlaceholder = function() {
 
       // </editor-fold>
 
-      const targetIsSpacer = this.classList.contains(cssClasses.spacer);
+      clearPlaceholders();
+      const placeholder = createPlaceholder(draggingWidget);
 
+      const targetIsSpacer = this.classList.contains(cssClasses.spacer);
       if (targetIsSpacer) {
-        clearPlaceholders();
-        const placeholder = document.createElement("div");
-        this.classList.add(cssClasses.placeholder);
-        this.appendChild(placeholder);
-      } else {
-        clearPlaceholders();
-        const placeholder = createPlaceholder(draggingWidget);
-        const widgetsContainer = getWidgetsContainer();
-        widgetsContainer.insertBefore(placeholder, this);
-        widgetsContainer.addHorizontalSpacers();
+        placeholder.makeFullWidth();
       }
-    }, 100);
+
+      const widgetsContainer = getWidgetsContainer();
+      widgetsContainer.insertBefore(placeholder, this);
+
+      if (parseInt(draggingWidget.style.order) < parseInt(this.style.order)) {
+        widgetsContainer.insertBefore(this, placeholder);
+      }
+
+      widgetsContainer.addHorizontalSpacers();
+    }, isSpacer ? 300 : 300);
   };
 
   const leaveHover = () => {
@@ -339,8 +355,8 @@ Element.prototype.makeDraggable = function() {
     if (placeholders.length) {
       const placeholder = placeholders[0];
       widgetsContainer.insertBefore(this, placeholder);
-      if (placeholder.classList.contains(cssClasses.spacer)) {
-        this.makeFullWidth();
+      if (placeholder.dataset.currentWidth !== this.dataset.currentWidth) {
+        this.resetWidth(placeholder.dataset.currentWidth);
       }
     }
 
