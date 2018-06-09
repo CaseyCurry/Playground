@@ -10,7 +10,9 @@ const cssClasses = {
   noHighlighting: "no-highlighting",
   spacer: "spacer",
   fullWidth: "col-12",
-  bootstrapPrefix: "col-"
+  xsClass: "col-xs-12",
+  mdClassPrefix: "col-md-",
+  bootstrapClassPrefix: "col-"
 };
 
 const maximumWidth = 12;
@@ -21,7 +23,7 @@ let draggingWidget;
 
 // <editor-fold> widget locators
 
-const getWidgetsContainer = function() {
+const getWidgetsContainer = () => {
   return document.getElementsByClassName(cssClasses.widgets)[0];
 }
 
@@ -67,11 +69,52 @@ Element.prototype.makeGrid = function() {
 
 // </editor-fold>
 
+// <editor-fold> respond on window resize
+
+const getResponsiveBreakpoint = () => {
+  const breakpoints = {
+    xl: "d-xl-none",
+    lg: "d-lg-none",
+    md: "d-md-none",
+    sm: "d-sm-none",
+    xs: "d-none"
+  };
+  let breakpoint = "";
+
+  const marker = document.createElement("div");
+  document.getElementsByTagName("body")[0].appendChild(marker);
+  const breakpointKeys = Object.keys(breakpoints);
+
+  for (let i = 0; i < breakpointKeys.length; i++) {
+    breakpoint = breakpointKeys[i];
+    marker.classList.add(breakpoints[breakpoint]);
+    const style = window.getComputedStyle(marker);
+    if (style.display === "none") {
+      break;
+    }
+  }
+
+  marker.remove();
+  return breakpoint;
+};
+
+let breakpoint;
+
+window.addEventListener("resize", () => {
+  const currentBreakpoint = getResponsiveBreakpoint();
+  if (currentBreakpoint != breakpoint) {
+    breakpoint = currentBreakpoint;
+    widgetsContainer.addHorizontalSpacers();
+  }
+});
+
+// </editor-fold>
+
 // <editor-fold> element width
 
 Element.prototype.removeBootstrapClasses = function() {
   Array.from(this.classList)
-    .filter(x => x.indexOf(cssClasses.bootstrapPrefix) === 0)
+    .filter(x => x.indexOf(cssClasses.bootstrapClassPrefix) === 0)
     .forEach(x => this.classList.remove(x));
 };
 
@@ -94,7 +137,10 @@ Element.prototype.makeFullWidth = function() {
 
 Element.prototype.moveToBottom = function() {
   const widgetsContainer = getWidgetsContainer();
-  widgetsContainer.insertBefore(this, null);
+
+  if (widgetsContainer.children.length > 1) {
+    widgetsContainer.insertBefore(this, null);
+  }
 };
 
 Element.prototype.moveToTop = function() {
@@ -113,7 +159,7 @@ Element.prototype.addHorizontalSpacers = function() {
 
   // <editor-fold> helpers
 
-  const createSpacer = function() {
+  const createSpacer = () => {
     const spacer = document.createElement("div");
     spacer.classList.add(cssClasses.spacer);
     spacer.classList.add(cssClasses.fullWidth);
@@ -191,7 +237,7 @@ Element.prototype.addHorizontalSpacers = function() {
 
 // <editor-fold> placeholders
 
-const clearPlaceholders = function() {
+const clearPlaceholders = () => {
   const placeholders = document.getElementsByClassName(cssClasses.placeholder);
 
   Array.from(placeholders)
@@ -200,7 +246,7 @@ const clearPlaceholders = function() {
     });
 };
 
-const createPlaceholder = function(template) {
+const createPlaceholder = (template) => {
   const placeholder = template.cloneNode(false);
   placeholder.removeAttribute("style");
   placeholder.style.order = template.style.order;
@@ -282,11 +328,81 @@ Element.prototype.configureDropPlaceholder = function(isSpacer) {
 
 // </editor-fold>
 
+// <editor-fold> widget creation and modification
+
+Element.prototype.addWidget = function(initialWidth, minimumWidth, contentInnerHTML) {
+  const widget = document.createElement("div");
+  this.appendChild(widget);
+  widget.className = "widget " + cssClasses.mdClassPrefix + initialWidth + " " + cssClasses.xsClass;
+  widget.setAttribute("data-minimum-width", minimumWidth);
+  widget.setAttribute("data-current-width", minimumWidth);
+
+  const container = document.createElement("div");
+  widget.appendChild(container);
+
+  const content = document.createElement("div");
+  container.appendChild(content);
+  content.className = "content";
+  content.innerHTML = contentInnerHTML;
+
+  return widget;
+};
+
+Element.prototype.addControlsPanel = function() {
+  const widgetControls = document.createElement("div");
+  const container = this.children[0].children[0];
+  this.children[0].insertBefore(widgetControls, container);
+  widgetControls.className = "controls";
+
+  const minimizeToggle = document.createElement("span");
+  widgetControls.appendChild(minimizeToggle);
+  minimizeToggle.innerHTML = "min/max &nbsp;&nbsp;";
+  minimizeToggle.className = "minimize-toggle";
+  minimizeToggle.setAttribute("data-not-draggable", true);
+  minimizeToggle.addEventListener("click", () => {
+    if (container.classList.contains("minimized")) {
+      container.classList.remove("minimized");
+    } else {
+      container.classList.add("minimized");
+    }
+  });
+
+  const fullWidthOption = document.createElement("span");
+  widgetControls.appendChild(fullWidthOption);
+  fullWidthOption.innerHTML = "full width &nbsp;&nbsp;";
+  fullWidthOption.setAttribute("data-not-draggable", true);
+  fullWidthOption.addEventListener("click", () => {
+    this.makeFullWidth();
+    const widgetsContainer = getWidgetsContainer();
+    widgetsContainer.addHorizontalSpacers();
+  });
+
+  const moveToBottom = document.createElement("span");
+  widgetControls.appendChild(moveToBottom);
+  moveToBottom.innerHTML = "move to bottom &nbsp;&nbsp;";
+  moveToBottom.setAttribute("data-not-draggable", true);
+  moveToBottom.addEventListener("click", () => {
+    this.moveToBottom();
+    const widgetsContainer = getWidgetsContainer();
+    widgetsContainer.addHorizontalSpacers();
+  });
+
+  const moveToTop = document.createElement("span");
+  widgetControls.appendChild(moveToTop);
+  moveToTop.innerHTML = "move to top &nbsp;&nbsp;";
+  moveToTop.setAttribute("data-not-draggable", true);
+  moveToTop.addEventListener("click", () => {
+    this.moveToTop();
+    const widgetsContainer = getWidgetsContainer();
+    widgetsContainer.addHorizontalSpacers();
+  });
+};
+
 Element.prototype.makeDraggable = function() {
 
   // <editor-fold> helpers
 
-  const getUserPosition = function(e) {
+  const getUserPosition = (e) => {
     return e.changedTouches ? {
       x: e.changedTouches[0].pageX,
       y: e.changedTouches[0].pageY
@@ -296,7 +412,7 @@ Element.prototype.makeDraggable = function() {
     };
   };
 
-  const conditionsToBeginMoveMet = function(e) {
+  const conditionsToBeginMoveMet = (e) => {
     if (e.target.dataset.notDraggable) {
       return false;
     }
@@ -307,7 +423,7 @@ Element.prototype.makeDraggable = function() {
 
   // <editor-fold> move handlers
 
-  const startMove = function(e) {
+  const startMove = (e) => {
     draggingWidget = this;
 
     // We'll reset this.style when we call endMove.
@@ -338,16 +454,16 @@ Element.prototype.makeDraggable = function() {
     // Add an initial placeholder in case the user immediately abandons the drag.
     const placeholder = createPlaceholder(this);
     widgetsContainer.insertBefore(placeholder, this);
-  }.bind(this);
+  };
 
-  const move = function(e) {
+  const move = (e) => {
     // Make the dragging widget follow the user's movement.
     const userPosition = getUserPosition(e);
     this.style.left = (userPosition.x - this.dragStart.x) + "px";
     this.style.top = (userPosition.y - this.dragStart.y) + "px";
-  }.bind(this);
+  };
 
-  const endMove = function(e) {
+  const endMove = (e) => {
     const widgetsContainer = getWidgetsContainer();
 
     // Find and replace the placeholder with the widget.
@@ -388,13 +504,13 @@ Element.prototype.makeDraggable = function() {
 
     widgetsContainer.addHorizontalSpacers();
     widgetsContainer.makeGrid();
-  }.bind(this);
+  };
 
   // </editor-fold>
 
   // <editor-fold> listener registration
 
-  this.addEventListener("mousedown", function(e) {
+  this.addEventListener("mousedown", (e) => {
     if (!conditionsToBeginMoveMet(e)) {
       return;
     }
@@ -402,9 +518,9 @@ Element.prototype.makeDraggable = function() {
     // Make sure these listeners are removed in endMove.
     document.addEventListener("mousemove", move);
     document.addEventListener("mouseup", endMove);
-  }.bind(this));
+  });
 
-  this.addEventListener("touchstart", function(e) {
+  this.addEventListener("touchstart", (e) => {
     if (!conditionsToBeginMoveMet(e)) {
       return;
     }
@@ -412,9 +528,11 @@ Element.prototype.makeDraggable = function() {
     // Make sure these listeners are removed in endMove.
     document.addEventListener("touchmove", move);
     document.addEventListener("touchend", endMove);
-  }.bind(this));
+  });
 
   // </editor-fold>
 
   this.configureDropPlaceholder();
 };
+
+// </editor-fold>
