@@ -27,120 +27,43 @@ const getWidgetsContainer = function() {
 
 // </editor-fold>
 
-// <editor-fold> placeholders
-
-const clearPlaceholders = function() {
-  const placeholders = document.getElementsByClassName(cssClasses.placeholder);
-
-  Array.from(placeholders)
-    .forEach(x => {
-      if (x.classList.contains(cssClasses.spacer)) {
-        x.classList.remove(cssClasses.placeholder);
-      } else {
-        x.remove();
-      }
-    });
-};
-
-const createPlaceholder = function(template) {
-  const placeholder = template.cloneNode(false);
-  placeholder.removeAttribute("style");
-  placeholder.style.order = template.style.order;
-  placeholder.classList.add(cssClasses.placeholder);
-  placeholder.classList.remove(cssClasses.draggable);
-  placeholder.style.height = template.offsetHeight + "px";
-  const content = document.createElement("div");
-  placeholder.appendChild(content);
-  return placeholder;
-};
-
-Element.prototype.configureDropPlaceholder = function() {
-  let timeout = false;
-
-  const startHover = () => {
-    if (!draggingWidget) {
-      return;
-    }
-    timeout = setTimeout(() => {
-      if (!draggingWidget) {
-        return;
-      }
-
-      // <editor-fold> resize logic
-
-      const targetMinimumWidth = parseInt(this.dataset.minimumWidth);
-      const targetCurrentWidth = parseInt(this.dataset.currentWidth);
-      const draggingMinimumWidth = parseInt(draggingWidget.dataset.minimumWidth);
-      const draggingCurrentWidth = parseInt(draggingWidget.dataset.currentWidth);
-      const targetHasRoom = (targetCurrentWidth + draggingCurrentWidth) <= maximumWidth;
-      const targetCouldMakeRoom = (targetMinimumWidth + draggingCurrentWidth) <= maximumWidth;
-      const bestWidths = {
-        target: targetHasRoom ? targetCurrentWidth : targetMinimumWidth,
-        dragging: targetHasRoom ? (maximumWidth - targetCurrentWidth) : (maximumWidth - targetMinimumWidth)
-      };
-
-      // console.log("start dump");
-      // console.log("targetMinimumWidth", targetMinimumWidth);
-      // console.log("targetCurrentWidth", targetCurrentWidth);
-      // console.log("draggingMinimumWidth", draggingMinimumWidth);
-      // console.log("draggingCurrentWidth", draggingCurrentWidth);
-      // console.log("targetHasRoom", targetHasRoom);
-      // console.log("targetCouldMakeRoom", targetCouldMakeRoom);
-      // console.log("bestWidths", bestWidths);
-
-      // </editor-fold>
-
-      const targetIsSpacer = this.classList.contains(cssClasses.spacer);
-
-      if (targetIsSpacer) {
-        clearPlaceholders();
-        const placeholder = document.createElement("div");
-        this.classList.add(cssClasses.placeholder);
-        this.appendChild(placeholder);
-      } else {
-        clearPlaceholders();
-        const placeholder = createPlaceholder(draggingWidget);
-        const widgetsContainer = getWidgetsContainer();
-        widgetsContainer.insertBefore(placeholder, this);
-        widgetsContainer.addHorizontalSpacers();
-      }
-    }, 100);
-  };
-
-  const leaveHover = () => {
-    if (timeout) {
-      window.clearTimeout(timeout);
-    }
-  };
-
-  this.addEventListener("mouseenter", startHover);
-  this.addEventListener("touchenter", startHover);
-
-  this.addEventListener("mouseleave", leaveHover);
-  this.addEventListener("touchleave", leaveHover);
-};
-
-// </editor-fold>
-
 // <editor-fold> not used for now
 
-// Array.prototype.makeGrid = function() {
-//   const grid = [];
-//   grid.push([]);
-//   let currentRowWidth = 0;
-//
-//   this.forEach(x => {
-//     const width = parseInt(x.dataset.currentWidth);
-//     grid[grid.length - 1].push({
-//       width: width,
-//       widget: x
-//     });
-//     currentRowWidth += width;
-//     if (currentRowWidth === maximumWidth) {
-//       grid.push([]);
-//     }
-//   });
-// };
+Element.prototype.makeGrid = function() {
+  const grid = [];
+  grid.push([]);
+  let currentRowWidth = 0;
+  const widgets = Array.from(this.children)
+    .filter(x => x.classList.contains(cssClasses.widget) && !x.classList.contains(cssClasses.draggable));
+
+  for (let i = 0; i < widgets.length; i++) {
+    const widget = widgets[i];
+    const width = parseInt(widget.dataset.currentWidth);
+    grid[grid.length - 1].push({
+      width: width,
+      widget: widget
+    });
+    currentRowWidth += width;
+    const isLastWidget = i === widgets.length - 1;
+    if (isLastWidget) {
+      break;
+    }
+    if (currentRowWidth === maximumWidth) {
+      grid.push([]);
+      currentRowWidth = 0;
+    } else {
+      // Preview the next widget and see if a new row is needed due to lack of space.
+      const nextWidget = widgets[i + 1];
+      const spaceLeftOnCurrentRow = maximumWidth - currentRowWidth;
+      if (nextWidget.dataset.currentWidth > spaceLeftOnCurrentRow) {
+        grid.push([]);
+        currentRowWidth = 0;
+      }
+    }
+  }
+
+  console.log("grid", grid);
+};
 
 // </editor-fold>
 
@@ -244,6 +167,101 @@ Element.prototype.addHorizontalSpacers = function() {
     insertSpacerAtBottom();
     resetOrderOfChildren();
   }
+};
+
+// </editor-fold>
+
+// <editor-fold> placeholders
+
+const clearPlaceholders = function() {
+  const placeholders = document.getElementsByClassName(cssClasses.placeholder);
+
+  Array.from(placeholders)
+    .forEach(x => {
+      if (x.classList.contains(cssClasses.spacer)) {
+        x.classList.remove(cssClasses.placeholder);
+      } else {
+        x.remove();
+      }
+    });
+};
+
+const createPlaceholder = function(template) {
+  const placeholder = template.cloneNode(false);
+  placeholder.removeAttribute("style");
+  placeholder.style.order = template.style.order;
+  placeholder.classList.add(cssClasses.placeholder);
+  placeholder.classList.remove(cssClasses.draggable);
+  placeholder.style.height = template.offsetHeight + "px";
+  const content = document.createElement("div");
+  placeholder.appendChild(content);
+  return placeholder;
+};
+
+Element.prototype.configureDropPlaceholder = function() {
+  let timeout = false;
+
+  const startHover = () => {
+    if (!draggingWidget) {
+      return;
+    }
+    timeout = setTimeout(() => {
+      if (!draggingWidget) {
+        return;
+      }
+
+      // <editor-fold> resize logic
+
+      const targetMinimumWidth = parseInt(this.dataset.minimumWidth);
+      const targetCurrentWidth = parseInt(this.dataset.currentWidth);
+      const draggingMinimumWidth = parseInt(draggingWidget.dataset.minimumWidth);
+      const draggingCurrentWidth = parseInt(draggingWidget.dataset.currentWidth);
+      const targetHasRoom = (targetCurrentWidth + draggingCurrentWidth) <= maximumWidth;
+      const targetCouldMakeRoom = (targetMinimumWidth + draggingCurrentWidth) <= maximumWidth;
+      const bestWidths = {
+        target: targetHasRoom ? targetCurrentWidth : targetMinimumWidth,
+        dragging: targetHasRoom ? (maximumWidth - targetCurrentWidth) : (maximumWidth - targetMinimumWidth)
+      };
+
+      // console.log("start dump");
+      // console.log("targetMinimumWidth", targetMinimumWidth);
+      // console.log("targetCurrentWidth", targetCurrentWidth);
+      // console.log("draggingMinimumWidth", draggingMinimumWidth);
+      // console.log("draggingCurrentWidth", draggingCurrentWidth);
+      // console.log("targetHasRoom", targetHasRoom);
+      // console.log("targetCouldMakeRoom", targetCouldMakeRoom);
+      // console.log("bestWidths", bestWidths);
+
+      // </editor-fold>
+
+      const targetIsSpacer = this.classList.contains(cssClasses.spacer);
+
+      if (targetIsSpacer) {
+        clearPlaceholders();
+        const placeholder = document.createElement("div");
+        this.classList.add(cssClasses.placeholder);
+        this.appendChild(placeholder);
+      } else {
+        clearPlaceholders();
+        const placeholder = createPlaceholder(draggingWidget);
+        const widgetsContainer = getWidgetsContainer();
+        widgetsContainer.insertBefore(placeholder, this);
+        widgetsContainer.addHorizontalSpacers();
+      }
+    }, 100);
+  };
+
+  const leaveHover = () => {
+    if (timeout) {
+      window.clearTimeout(timeout);
+    }
+  };
+
+  this.addEventListener("mouseenter", startHover);
+  this.addEventListener("touchenter", startHover);
+
+  this.addEventListener("mouseleave", leaveHover);
+  this.addEventListener("touchleave", leaveHover);
 };
 
 // </editor-fold>
@@ -353,6 +371,7 @@ Element.prototype.makeDraggable = function() {
     // </editor-fold>
 
     widgetsContainer.addHorizontalSpacers();
+    widgetsContainer.makeGrid();
   }.bind(this);
 
   // </editor-fold>

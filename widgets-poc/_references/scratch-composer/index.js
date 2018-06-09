@@ -95,11 +95,12 @@ const widgets = [
   createWidget("col-md-8 col-xs-12", "50px", "4", 8)
 ];
 
-const widgetList = document.getElementsByClassName("widgets")[0];
+const widgetsContainer = document.getElementsByClassName("widgets")[0];
 
 widgets.forEach(x => {
   x.makeDraggable();
-  widgetList.appendChild(x);
+  widgetsContainer.appendChild(x);
 });
 
-widgetList.addHorizontalSpacers();
+widgetsContainer.addHorizontalSpacers();
+widgetsContainer.makeGrid();
