@@ -1,0 +1,9 @@
+<div class='card card-row' (mouseenter)='onWidgetMouseEnter()' (touchstart)='onWidgetTouchStart()' (mouseleave)='onWidgetMouseLeave()' (touchleave)='onWidgetTouchLeave()'>
+  <app-widget-controls [widget]='widget' (mousedown)='onWidgetMouseDown($event)' (touchstart)='onWidgetTouchStart($event)' (close)='onCloseClick()' (fullscreen)='onToggleFullScreenClick()'></app-widget-controls>
+  <div [ngClass]='widget.isExpanded ? "maximized" : "minimized"'>
+    <div class='container'>
+      <div class="loader">Loading...</div>
+    </div>
+    <div class='resizer d-none d-sm-inline' (mousedown)='onResizerMouseDown()' (touchstart)='onResizerTouchStart()'></div>
+  </div>
+</div>

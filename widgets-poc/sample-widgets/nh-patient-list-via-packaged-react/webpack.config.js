@@ -74,8 +74,7 @@ module.exports = [{
   },
   externals: {
     "react": "React",
-    "react-dom": "ReactDOM",
-    "nh-browser-bus": "nhBrowserBus"
+    "react-dom": "ReactDOM"
   },
   module: {
     rules: [{

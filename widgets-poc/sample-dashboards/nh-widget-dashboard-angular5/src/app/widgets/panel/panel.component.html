@@ -1,0 +1,14 @@
+<app-widgets-panel-controls (editLibrary)='onEditLibrary($event)' (editLayout)='onEditLayout($event)'></app-widgets-panel-controls>
+<app-widgets-library *ngIf='library.isDisplayed' [library]='library' (done)='onHideLibrary()' (renderWidget)='onRenderWidget($event)' (derenderWidget)='onDerenderWidget($event)'></app-widgets-library>
+<app-widgets-layout-editor *ngIf='layoutEditor.isDisplayed' [layoutEditor]='layoutEditor' (done)='onHideLayoutEditor()'></app-widgets-layout-editor>
+<ng-container *ngFor='let item of items'>
+  <app-widget *ngIf='item.widget; else drop' [widget]='item.widget' (widgetMoving)='onWidgetMove($event)' (widgetDropped)='onWidgetDropped()' (widgetHovered)='onWidgetHovered($event)' (widgetUnhovered)='onWidgetUnhovered()' (resizeStarted)='onWidgetResizeStarted($event)'
+    (close)='onWidgetCloseClick($event)' (fullscreen)='onWidgetToggleFullScreenClick()'></app-widget>
+  <ng-template #drop>
+    <app-widget-drop-target *ngIf='item.dropTarget; else spacer' [dropTarget]='item.dropTarget' [height]='item.height'></app-widget-drop-target>
+    <ng-template #spacer>
+      <app-widgets-panel-spacer [spacer]='item.spacer' (spacerHovered)='onSpacerHovered($event)' (spacerUnhovered)='onSpacerUnhovered()'></app-widgets-panel-spacer>
+    </ng-template>
+  </ng-template>
+</ng-container>
+<app-widget-resize-guideline *ngFor='let guideline of resizeGuidelines' [guideline]='guideline' (resized)='onWidgetResized($event)'></app-widget-resize-guideline>

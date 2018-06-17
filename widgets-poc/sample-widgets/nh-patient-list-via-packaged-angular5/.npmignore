@@ -1,3 +1,5 @@
 *
 !/lib/*
 !package.json
+!/src/*
+/src/**/*.spec.ts

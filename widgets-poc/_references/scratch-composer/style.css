@@ -8,15 +8,42 @@ html, body {
   padding: 0;
 }
 
-.widget.out-of-focus {
-  opacity: .5;
-}
-
 .widget>div {
   height: 100%;
   margin-left: 10px;
   margin-right: 10px;
   background: white;
+}
+
+.widget.out-of-focus {
+  opacity: .5;
+}
+
+.widget.resizable>div {
+  margin-right: 10px;
+}
+
+@media screen and (min-width: 768px) {
+  .widget.resizable>div {
+    margin-right: 11px;
+  }
+}
+
+.widget .resizer {
+  border-right: 1px solid lightgray;
+  position: absolute;
+  top: 0;
+  right: -1px;
+}
+
+.widget .resizer:hover {
+  cursor: ew-resize;
+}
+
+.resize-guideline {
+  position: absolute;
+  height: 100%;
+  border-right: 1px dotted blue;
 }
 
 .controls {
@@ -50,19 +77,6 @@ html, body {
   pointer-events: none;
 }
 
-.draggable-move {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
-.draggable-hide {
-  display: none !important;
-}
-
 .no-highlighting {
   /* iOS Safari */
   -webkit-touch-callout: none;
@@ -75,4 +89,9 @@ html, body {
   /* Internet Explorer/Edge */
   -ms-user-select: none;
   user-select: none;
+}
+
+.column-marker {
+  position: absolute;
+  visibility: hidden;
 }

@@ -44,6 +44,19 @@ class Bus {
   }
 }
 
-const instance = typeof window != "undefined" && window.nhBrowserBus ? window.nhBrowserBus : new Bus();
-
-export default instance;
+export default {
+  create: () => {
+    let instance;
+    if (typeof window != "undefined" && window.nhBrowserBus) {
+      if (!window.nhBrowserBus.instance) {
+        instance = window.nhBrowserBus.instance;
+      } else {
+        instance = new Bus();
+        window.nhBrowserBus.instance = instance;
+      }
+    } else {
+      instance = new Bus();
+    }
+    return instance;
+  }
+};

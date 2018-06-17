@@ -5,19 +5,44 @@
 const cssClasses = {
   widgets: "widgets",
   widget: "widget",
+  outOfFocusClass: "out-of-focus",
   placeholder: "placeholder",
   draggable: "draggable",
+  resizable: "resizable",
+  resizer: "resizer",
+  resizeGuideline: "resize-guideline",
   noHighlighting: "no-highlighting",
   spacer: "spacer",
   fullWidth: "col-12",
   xsClass: "col-xs-12",
   mdClassPrefix: "col-md-",
-  bootstrapClassPrefix: "col-"
+  bootstrapClassPrefix: "col-",
+  hideOnMobileClass: ["d-none", "d-md-block"],
+  columnMarker: ["col-1", "column-marker"]
 };
 
 const maximumWidth = 12;
 
 let draggingWidget;
+
+let resizingWidget;
+
+// This is used to re-draw the horizontal spacers when bootstrap media query breakpoints are reached.
+let currentMediaQuerySize;
+
+// </editor-fold>
+
+// <editor-fold> user position
+
+const getUserPosition = (e) => {
+  return e.changedTouches ? {
+    x: e.changedTouches[0].pageX,
+    y: e.changedTouches[0].pageY
+  } : {
+    x: e.pageX,
+    y: e.pageY
+  };
+};
 
 // </editor-fold>
 
@@ -41,10 +66,7 @@ Element.prototype.makeGrid = function() {
   for (let i = 0; i < widgets.length; i++) {
     const widget = widgets[i];
     const width = parseInt(widget.dataset.currentWidth);
-    grid[grid.length - 1].push({
-      width: width,
-      widget: widget
-    });
+    grid[grid.length - 1].push(widget);
     currentRowWidth += width;
     const isLastWidget = i === widgets.length - 1;
     if (isLastWidget) {
@@ -64,14 +86,14 @@ Element.prototype.makeGrid = function() {
     }
   }
 
-  console.log("grid", grid);
+  return grid;
 };
 
 // </editor-fold>
 
-// <editor-fold> respond on window resize
+// <editor-fold> responsive calculations
 
-const getResponsiveBreakpoint = () => {
+const getResponsiveInformation = () => {
   const breakpoints = {
     xl: "d-xl-none",
     lg: "d-lg-none",
@@ -79,15 +101,18 @@ const getResponsiveBreakpoint = () => {
     sm: "d-sm-none",
     xs: "d-none"
   };
-  let breakpoint = "";
+  let breakpointKey = "";
 
   const marker = document.createElement("div");
+  marker.classList.add(...cssClasses.columnMarker);
   document.getElementsByTagName("body")[0].appendChild(marker);
+  const singleColumnWidth = marker.getBoundingClientRect()
+    .width;
   const breakpointKeys = Object.keys(breakpoints);
 
   for (let i = 0; i < breakpointKeys.length; i++) {
-    breakpoint = breakpointKeys[i];
-    marker.classList.add(breakpoints[breakpoint]);
+    breakpointKey = breakpointKeys[i];
+    marker.classList.add(breakpoints[breakpointKey]);
     const style = window.getComputedStyle(marker);
     if (style.display === "none") {
       break;
@@ -95,15 +120,16 @@ const getResponsiveBreakpoint = () => {
   }
 
   marker.remove();
-  return breakpoint;
+  return {
+    currentSize: breakpointKey,
+    singleColumnWidth: singleColumnWidth
+  };
 };
 
-let breakpoint;
-
 window.addEventListener("resize", () => {
-  const currentBreakpoint = getResponsiveBreakpoint();
-  if (currentBreakpoint != breakpoint) {
-    breakpoint = currentBreakpoint;
+  const responsiveInformation = getResponsiveInformation();
+  if (currentMediaQuerySize != responsiveInformation.currentSize) {
+    currentMediaQuerySize = responsiveInformation.currentSize;
     widgetsContainer.addHorizontalSpacers();
   }
 });
@@ -163,8 +189,7 @@ Element.prototype.addHorizontalSpacers = function() {
     const spacer = document.createElement("div");
     spacer.classList.add(cssClasses.spacer);
     spacer.classList.add(cssClasses.fullWidth);
-    const isSpacer = true;
-    spacer.configureDropPlaceholder(isSpacer);
+    spacer.configureDropPlaceholder();
     return spacer;
   };
 
@@ -258,7 +283,7 @@ const createPlaceholder = (template) => {
   return placeholder;
 };
 
-Element.prototype.configureDropPlaceholder = function(isSpacer) {
+Element.prototype.configureDropPlaceholder = function() {
   let timeout = false;
 
   const startHover = () => {
@@ -269,30 +294,6 @@ Element.prototype.configureDropPlaceholder = function(isSpacer) {
       if (!draggingWidget) {
         return;
       }
-
-      // <editor-fold> resize logic
-
-      const targetMinimumWidth = parseInt(this.dataset.minimumWidth);
-      const targetCurrentWidth = parseInt(this.dataset.currentWidth);
-      const draggingMinimumWidth = parseInt(draggingWidget.dataset.minimumWidth);
-      const draggingCurrentWidth = parseInt(draggingWidget.dataset.currentWidth);
-      const targetHasRoom = (targetCurrentWidth + draggingCurrentWidth) <= maximumWidth;
-      const targetCouldMakeRoom = (targetMinimumWidth + draggingCurrentWidth) <= maximumWidth;
-      const bestWidths = {
-        target: targetHasRoom ? targetCurrentWidth : targetMinimumWidth,
-        dragging: targetHasRoom ? (maximumWidth - targetCurrentWidth) : (maximumWidth - targetMinimumWidth)
-      };
-
-      // console.log("start dump");
-      // console.log("targetMinimumWidth", targetMinimumWidth);
-      // console.log("targetCurrentWidth", targetCurrentWidth);
-      // console.log("draggingMinimumWidth", draggingMinimumWidth);
-      // console.log("draggingCurrentWidth", draggingCurrentWidth);
-      // console.log("targetHasRoom", targetHasRoom);
-      // console.log("targetCouldMakeRoom", targetCouldMakeRoom);
-      // console.log("bestWidths", bestWidths);
-
-      // </editor-fold>
 
       clearPlaceholders();
       const placeholder = createPlaceholder(draggingWidget);
@@ -310,7 +311,7 @@ Element.prototype.configureDropPlaceholder = function(isSpacer) {
       }
 
       widgetsContainer.addHorizontalSpacers();
-    }, isSpacer ? 300 : 300);
+    }, 300);
   };
 
   const leaveHover = () => {
@@ -330,12 +331,39 @@ Element.prototype.configureDropPlaceholder = function(isSpacer) {
 
 // <editor-fold> widget creation and modification
 
+// <editor-fold> helpers
+
+const preventHighlightingWhileDragging = () => {
+  document.body.classList.add(cssClasses.noHighlighting);
+};
+
+const allowHighlighting = () => {
+  document.body.classList.remove(cssClasses.noHighlighting);
+};
+
+const makeOtherWidgetsLessProminent = (ignore) => {
+  const widgetsContainer = getWidgetsContainer();
+  Array.from(widgetsContainer.children)
+    .filter(x => x != ignore)
+    .forEach(x => x.classList.add(cssClasses.outOfFocusClass));
+};
+
+const makeWidgetsProminent = () => {
+  const widgetsContainer = getWidgetsContainer();
+  Array.from(widgetsContainer.children)
+    .forEach(x => {
+      x.classList.remove(cssClasses.outOfFocusClass);
+    });
+}
+
+// </editor-fold>
+
 Element.prototype.addWidget = function(initialWidth, minimumWidth, contentInnerHTML) {
   const widget = document.createElement("div");
   this.appendChild(widget);
   widget.className = "widget " + cssClasses.mdClassPrefix + initialWidth + " " + cssClasses.xsClass;
   widget.setAttribute("data-minimum-width", minimumWidth);
-  widget.setAttribute("data-current-width", minimumWidth);
+  widget.setAttribute("data-current-width", initialWidth);
 
   const container = document.createElement("div");
   widget.appendChild(container);
@@ -400,55 +428,28 @@ Element.prototype.addControlsPanel = function() {
 
 Element.prototype.makeDraggable = function() {
 
-  // <editor-fold> helpers
-
-  const getUserPosition = (e) => {
-    return e.changedTouches ? {
-      x: e.changedTouches[0].pageX,
-      y: e.changedTouches[0].pageY
-    } : {
-      x: e.pageX,
-      y: e.pageY
-    };
-  };
-
-  const conditionsToBeginMoveMet = (e) => {
-    if (e.target.dataset.notDraggable) {
-      return false;
-    }
-    return true;
-  }
-
-  // </editor-fold>
-
   // <editor-fold> move handlers
 
   const startMove = (e) => {
     draggingWidget = this;
 
     // We'll reset this.style when we call endMove.
-    this.initialPosition = {
+    this.initialWidgetStylePosition = {
       top: this.style.top,
       left: this.style.left
     };
 
-    // Prevent highlighting as the user is dragging.
-    document.body.classList.add(cssClasses.noHighlighting);
-
-    // Make widgets not being dragged less prominent.
-    const widgetsContainer = getWidgetsContainer();
-    Array.from(widgetsContainer.children)
-      .filter(x => x != this)
-      .forEach(x => x.classList.add("out-of-focus"));
+    preventHighlightingWhileDragging();
+    makeOtherWidgetsLessProminent(this);
 
     // Make the dragging widget follow the user's movement.
     const userPosition = getUserPosition(e);
-    this.dragStart = {
+    this.dragStartPosition = {
       x: e.touches ? e.touches[0].pageX - this.offsetLeft : e.pageX - this.offsetLeft,
       y: e.touches ? e.touches[0].pageY - this.offsetTop : e.pageY - this.offsetTop
     };
-    this.style.left = (userPosition.x - this.dragStart.x) + "px";
-    this.style.top = (userPosition.y - this.dragStart.y) + "px";
+    this.style.left = (userPosition.x - this.dragStartPosition.x) + "px";
+    this.style.top = (userPosition.y - this.dragStartPosition.y) + "px";
     this.classList.add(cssClasses.draggable);
 
     // Add an initial placeholder in case the user immediately abandons the drag.
@@ -457,10 +458,10 @@ Element.prototype.makeDraggable = function() {
   };
 
   const move = (e) => {
-    // Make the dragging widget follow the user's movement.
+    // Make the widget follow the user's movement.
     const userPosition = getUserPosition(e);
-    this.style.left = (userPosition.x - this.dragStart.x) + "px";
-    this.style.top = (userPosition.y - this.dragStart.y) + "px";
+    this.style.left = (userPosition.x - this.dragStartPosition.x) + "px";
+    this.style.top = (userPosition.y - this.dragStartPosition.y) + "px";
   };
 
   const endMove = (e) => {
@@ -482,16 +483,11 @@ Element.prototype.makeDraggable = function() {
 
     this.classList.remove(cssClasses.draggable);
 
-    this.style.top = this.initialPosition.top;
-    this.style.left = this.initialPosition.left;
+    this.style.top = this.initialWidgetStylePosition.top;
+    this.style.left = this.initialWidgetStylePosition.left;
 
-    Array.from(getWidgetsContainer()
-        .children)
-      .forEach(x => {
-        x.classList.remove("out-of-focus");
-      });
-
-    document.body.classList.remove(cssClasses.noHighlighting);
+    makeWidgetsProminent();
+    allowHighlighting();
 
     draggingWidget = null;
 
@@ -503,14 +499,22 @@ Element.prototype.makeDraggable = function() {
     // </editor-fold>
 
     widgetsContainer.addHorizontalSpacers();
-    widgetsContainer.makeGrid();
   };
 
   // </editor-fold>
 
   // <editor-fold> listener registration
 
-  this.addEventListener("mousedown", (e) => {
+  const conditionsToBeginMoveMet = (e) => {
+    if (e.target.dataset.notDraggable) {
+      return false;
+    }
+    return true;
+  }
+
+  // Add the listener to the container div in the widget. This gives the dragger bar
+  // room to handle events without competing with the widget.
+  this.children[0].addEventListener("mousedown", (e) => {
     if (!conditionsToBeginMoveMet(e)) {
       return;
     }
@@ -520,7 +524,7 @@ Element.prototype.makeDraggable = function() {
     document.addEventListener("mouseup", endMove);
   });
 
-  this.addEventListener("touchstart", (e) => {
+  this.children[0].addEventListener("touchstart", (e) => {
     if (!conditionsToBeginMoveMet(e)) {
       return;
     }
@@ -533,6 +537,161 @@ Element.prototype.makeDraggable = function() {
   // </editor-fold>
 
   this.configureDropPlaceholder();
+};
+
+Element.prototype.makeResizable = function() {
+
+  // <editor-fold> helpers
+
+  const findGridRow = () => {
+    const grid = widgetsContainer.makeGrid();
+    for (let i = 0; i < grid.length; i++) {
+      const widgetIndex = grid[i].indexOf(this);
+      if (widgetIndex >= 0) {
+        return grid[i];
+      }
+    }
+  };
+
+  const calculateBoundaries = () => {
+    // don't go left far enough to exceed the minimum of the widget
+    // don't go right far enough to exceed the width of the row
+    const row = findGridRow();
+    const totalRowWidth = row
+      .map(x => parseInt(x.dataset.currentWidth))
+      .reduce((x, y) => x + y);
+    const currentPosition = row
+      .slice(0, row.indexOf(this) + 1)
+      .map(x => parseInt(x.dataset.currentWidth))
+      .reduce((x, y) => x + y);
+    const minimumWidth = parseInt(this.dataset.minimumWidth);
+    const spaceToMinimize = parseInt(this.dataset.currentWidth) - minimumWidth;
+    const left = currentPosition - spaceToMinimize;
+    // const right = maximumWidth - totalRowWidth + currentPosition;
+    const right = maximumWidth;
+    const offset = minimumWidth - left;
+    return { left, right, offset };
+  };
+
+  const calculateResizeGuidelines = () => {
+    const widgetsContainer = getWidgetsContainer();
+    const boundaries = calculateBoundaries();
+    const guidelines = [];
+
+    for (let i = boundaries.left; i <= boundaries.right; i++) {
+      const placeholder = this.cloneNode(false);
+      placeholder.resetWidth(i);
+      placeholder.style.visibility = "hidden";
+      placeholder.style.order = widgetsContainer.children.length;
+      const content = document.createElement("div");
+      placeholder.appendChild(content);
+      widgetsContainer.appendChild(placeholder);
+      const right = content.getBoundingClientRect()
+        .right;
+      guidelines.push({
+        position: right,
+        targetWidth: i + boundaries.offset
+      });
+      placeholder.remove();
+    }
+
+    return guidelines;
+  };
+
+  const createGuideline = (top, height, guidelineInformation) => {
+    const startHover = () => {
+      if (!resizingWidget) {
+        return;
+      }
+      if (guidelineInformation.targetWidth != this.dataset.currentWidth) {
+        this.resetWidth(guidelineInformation.targetWidth);
+      }
+      const widgetsContainer = getWidgetsContainer();
+      widgetsContainer.addHorizontalSpacers();
+    };
+
+    const guideline = document.createElement("div");
+    guideline.classList.add(cssClasses.resizeGuideline);
+    guideline.style.top = (top + window.scrollY) + "px";
+    guideline.style.height = height + "px";
+    guideline.style.left = (guidelineInformation.position + window.scrollX) + "px";
+
+    guideline.addEventListener("mouseenter", startHover);
+    guideline.addEventListener("touchenter", startHover);
+
+    return guideline;
+  };
+
+  // </editor-fold>
+
+  // <editor-fold> add dragger
+
+  const dragger = document.createElement("div");
+  dragger.classList.add(cssClasses.resizer);
+  dragger.classList.add(...cssClasses.hideOnMobileClass);
+  this.appendChild(dragger);
+  this.classList.add(cssClasses.resizable);
+
+  // </editor-fold>
+
+  // <editor-fold> move handlers
+
+  const startMove = () => {
+    resizingWidget = this;
+
+    preventHighlightingWhileDragging();
+    makeOtherWidgetsLessProminent(this);
+
+    const addGuidelines = () => {
+      const widgetsContainer = getWidgetsContainer();
+      const widgetRect = this.getBoundingClientRect();
+      const guidelines = calculateResizeGuidelines();
+      guidelines.forEach(guidelineInformation => {
+        const guideline = createGuideline(widgetRect.top, widgetRect.height, guidelineInformation);
+        widgetsContainer.appendChild(guideline);
+      });
+    };
+
+    addGuidelines();
+  };
+
+  const endMove = (e) => {
+
+    // <editor-fold> cleanup
+
+    Array.from(document.getElementsByClassName(cssClasses.resizeGuideline))
+      .forEach(x => x.remove());
+    makeWidgetsProminent();
+    allowHighlighting();
+
+    resizingWidget = null;
+
+    document.removeEventListener("mouseup", endMove);
+    document.removeEventListener("touchend", endMove);
+
+    // </editor-fold>
+
+    const widgetsContainer = getWidgetsContainer();
+    widgetsContainer.addHorizontalSpacers();
+  };
+
+  // </editor-fold>;
+
+  // <editor-fold> listener registration
+
+  dragger.addEventListener("mousedown", (e) => {
+    startMove();
+    // Make sure these listeners are removed in endMove.
+    document.addEventListener("mouseup", endMove);
+  });
+
+  dragger.addEventListener("touchstart", (e) => {
+    startMove();
+    // Make sure these listeners are removed in endMove.
+    document.addEventListener("touchend", endMove);
+  });
+
+  // </editor-fold>
 };
 
 // </editor-fold>

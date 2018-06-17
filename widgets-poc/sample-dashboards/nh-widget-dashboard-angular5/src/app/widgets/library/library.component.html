@@ -1,0 +1,22 @@
+<div class='title'>Library</div>
+<ul class='list-group'>
+  <li *ngFor='let libraryWidget of library.widgets' class='list-group-item'>
+    <span>{{libraryWidget.widget.title}}</span>
+    <!-- <span *ngIf='libraryWidget.isRendered; else not' class='material-icons' (click)='onRemoveWidget(libraryWidget.widget)'>remove_circle_outline</span>
+    <ng-template #not>
+      <span class='material-icons' (click)='onAddWidget(libraryWidget.widget)'>add_circle_outline</span>
+    </ng-template> -->
+    <!-- <div class='pretty p-switch p-fill'>
+      <input id='libraryWidget.widget.id' type='checkbox' [checked]='libraryWidget.isRendered' (change)='onCheckboxChange(libraryWidget)' />
+    </div> -->
+    <span class='pretty p-switch p-fill'>
+      <input type='checkbox' [checked]='libraryWidget.isRendered' (change)='onCheckboxChange(libraryWidget)' />
+      <div class='state p-success'>
+        <label></label>
+      </div>
+    </span>
+  </li>
+</ul>
+<div class='button-container'>
+  <button class='btn btn-primary' (click)='onDoneClick()'>Done</button>
+</div>

@@ -1,0 +1,12 @@
+<div class='title'>{{widget.title}}</div>
+<div *ngIf='!widget.isFullScreen; else fullscreen' class='no-highlighting not-grabbable'>
+  <span *ngIf='widget.isExpanded; else expand' class='material-icons' (click)='onCollapseClick()'>expand_less</span>
+  <ng-template #expand>
+    <span class='material-icons' (click)='onExpandClick()'>expand_more</span>
+  </ng-template>
+  <span class='material-icons d-none d-sm-inline' (click)='onToggleFullScreenClick()'>fullscreen</span>
+  <span class='material-icons' (click)='onCloseClick()'>close</span>
+</div>
+<ng-template #fullscreen>
+  <div class='material-icons no-highlighting not-grabbable' (click)='onToggleFullScreenClick()'>fullscreen_exit</div>
+</ng-template>
