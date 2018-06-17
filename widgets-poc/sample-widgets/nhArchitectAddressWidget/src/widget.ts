@@ -8,7 +8,15 @@ if (environment.production) {
   enableProdMode();
 }
 
-export const render = async function(container: HTMLElement) {
+const id = 'c5d03052-1716-4dfb-a08a-76967051d4cf';
+const title = 'Architect Address (Angular 4)';
+const width = {
+  xs: 12,
+  sm: 8,
+  md: 6
+};
+const initialHeight = '250px';
+const render = async function(container: HTMLElement) {
   return new Promise(async (resolve, reject) => {
     try {
       const appRoot = document.createElement('architect-address-widget');
@@ -21,11 +29,10 @@ export const render = async function(container: HTMLElement) {
   });
 };
 
-export const metadata = {
-  title: "Architect Address (Angular 4)",
-  width: {
-    xs: 12,
-    md: 8,
-    lg: 6
-  }
-};
+export default {
+  id,
+  title,
+  width,
+  initialHeight,
+  render
+}

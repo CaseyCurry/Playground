@@ -70823,8 +70823,8 @@ function __generator(thisArg, body) {
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
         while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
+            if (f = 1, y && (t = y[op[0] & 2 ? "return" : op[0] ? "throw" : "next"]) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [0, t.value];
             switch (op[0]) {
                 case 0: case 1: t = op; break;
                 case 4: _.label++; return { value: op[1], done: false };
@@ -70980,14 +70980,14 @@ webpackEmptyAsyncContext.id = "./src/$$_lazy_route_resource lazy recursive";
 /***/ "./src/app/app.component.css":
 /***/ (function(module, exports) {
 
-module.exports = "ul {\r\n    margin-top: 10px;\r\n    padding: 0;\r\n}\r\n\r\nli {\r\n    list-style: none;\r\n}"
+module.exports = "ul {\n    margin-top: 10px;\n    padding: 0;\n}\n\nli {\n    list-style: none;\n}"
 
 /***/ }),
 
 /***/ "./src/app/app.component.html":
 /***/ (function(module, exports) {
 
-module.exports = "<h1>\r\n  {{ title }}\r\n</h1>\r\n<div class='col-12'>\r\n  <input (keyup)='newArchitectOnKeyUp($event)' />\r\n  <button (click)='addOnClick()'>Add Architect</button>\r\n  <ul>\r\n    <li *ngFor='let architect of architects' (click)='architectOnClick(architect)'>{{ architect }}</li>\r\n  </ul>\r\n</div>"
+module.exports = "<h1>\n  {{ title }}\n</h1>\n<div class='col-12'>\n  <input (keyup)='newArchitectOnKeyUp($event)' />\n  <button (click)='addOnClick()'>Add Architect</button>\n  <ul>\n    <li *ngFor='let architect of architects' (click)='architectOnClick(architect)'>{{ architect }}</li>\n  </ul>\n</div>"
 
 /***/ }),
 
@@ -71196,8 +71196,6 @@ var environment = {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "metadata", function() { return metadata; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("./node_modules/@angular/core/esm5/core.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_platform_browser_dynamic__ = __webpack_require__("./node_modules/@angular/platform-browser-dynamic/esm5/platform-browser-dynamic.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__app_app_module__ = __webpack_require__("./src/app/app.module.ts");
@@ -71244,6 +71242,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 if (__WEBPACK_IMPORTED_MODULE_3__environments_environment__["a" /* environment */].production) {
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_5" /* enableProdMode */])();
 }
+var id = 'd4181c23-4c1f-4c2a-910a-7d383afb9cd9';
+var title = 'Architect List {Angular 5}';
+var width = {
+    xs: 6,
+    sm: 5,
+    md: 4
+};
+var initialHeight = '250px';
 var render = function (container) {
     return __awaiter(this, void 0, void 0, function () {
         var _this = this;
@@ -71272,14 +71278,13 @@ var render = function (container) {
         });
     });
 };
-var metadata = {
-    title: "Architect List (Angular 5)",
-    width: {
-        xs: 6,
-        sm: 5,
-        md: 4
-    }
-};
+/* harmony default export */ __webpack_exports__["default"] = ({
+    id: id,
+    title: title,
+    width: width,
+    initialHeight: initialHeight,
+    render: render
+});
 
 
 /***/ }),

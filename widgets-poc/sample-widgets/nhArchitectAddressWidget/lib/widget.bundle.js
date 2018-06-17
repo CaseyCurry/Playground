@@ -55223,8 +55223,6 @@ var environment = {
 
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "render", function() { return render; });
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "metadata", function() { return metadata; });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__angular_core__ = __webpack_require__("./node_modules/@angular/core/@angular/core.es5.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_1__angular_platform_browser_dynamic__ = __webpack_require__("./node_modules/@angular/platform-browser-dynamic/@angular/platform-browser-dynamic.es5.js");
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_2__app_app_module__ = __webpack_require__("./src/app/app.module.ts");
@@ -55271,6 +55269,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 if (__WEBPACK_IMPORTED_MODULE_3__environments_environment__["a" /* environment */].production) {
     Object(__WEBPACK_IMPORTED_MODULE_0__angular_core__["_19" /* enableProdMode */])();
 }
+var id = 'c5d03052-1716-4dfb-a08a-76967051d4cf';
+var title = 'Architect Address (Angular 4)';
+var width = {
+    xs: 12,
+    sm: 8,
+    md: 6
+};
+var initialHeight = '250px';
 var render = function (container) {
     return __awaiter(this, void 0, void 0, function () {
         var _this = this;
@@ -55299,14 +55305,13 @@ var render = function (container) {
         });
     });
 };
-var metadata = {
-    title: "Architect Address (Angular 4)",
-    width: {
-        xs: 12,
-        md: 8,
-        lg: 6
-    }
-};
+/* harmony default export */ __webpack_exports__["default"] = ({
+    id: id,
+    title: title,
+    width: width,
+    initialHeight: initialHeight,
+    render: render
+});
 //# sourceMappingURL=widget.js.map
 
 /***/ }),

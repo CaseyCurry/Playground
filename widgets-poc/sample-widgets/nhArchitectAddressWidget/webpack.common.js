@@ -11,7 +11,8 @@ const cssnano = require('cssnano');
 
 const { NoEmitOnErrorsPlugin, SourceMapDevToolPlugin, NamedModulesPlugin } = require('webpack');
 const { NamedLazyChunksWebpackPlugin, BaseHrefWebpackPlugin } = require('@angular/cli/plugins/webpack');
-const { CommonsChunkPlugin } = require('webpack').optimize;
+const { CommonsChunkPlugin } = require('webpack')
+  .optimize;
 const { AotPlugin } = require('@ngtools/webpack');
 
 const nodeModules = path.join(process.cwd(), 'node_modules');
@@ -21,41 +22,39 @@ const entryPoints = ["inline", "polyfills", "vendor", "sw-register", "styles", "
 const minimizeCss = false;
 const baseHref = "";
 const deployUrl = "";
-const postcssPlugins = function () {
-        // safe settings based on: https://github.com/ben-eb/cssnano/issues/358#issuecomment-283696193
-        const importantCommentRe = /@preserve|@license|[@#]\s*source(?:Mapping)?URL|^!/i;
-        const minimizeOptions = {
-            autoprefixer: false,
-            safe: true,
-            mergeLonghand: false,
-            discardComments: { remove: (comment) => !importantCommentRe.test(comment) }
-        };
-        return [
-            postcssUrl({
-                url: (URL) => {
-                    // Only convert root relative URLs, which CSS-Loader won't process into require().
-                    if (!URL.startsWith('/') || URL.startsWith('//')) {
-                        return URL;
-                    }
-                    if (deployUrl.match(/:\/\//)) {
-                        // If deployUrl contains a scheme, ignore baseHref use deployUrl as is.
-                        return `${deployUrl.replace(/\/$/, '')}${URL}`;
-                    }
-                    else if (baseHref.match(/:\/\//)) {
-                        // If baseHref contains a scheme, include it as is.
-                        return baseHref.replace(/\/$/, '') +
-                            `/${deployUrl}/${URL}`.replace(/\/\/+/g, '/');
-                    }
-                    else {
-                        // Join together base-href, deploy-url and the original URL.
-                        // Also dedupe multiple slashes into single ones.
-                        return `/${baseHref}/${deployUrl}/${URL}`.replace(/\/\/+/g, '/');
-                    }
-                }
-            }),
-            autoprefixer(),
-        ].concat(minimizeCss ? [cssnano(minimizeOptions)] : []);
-    };
+const postcssPlugins = function() {
+  // safe settings based on: https://github.com/ben-eb/cssnano/issues/358#issuecomment-283696193
+  const importantCommentRe = /@preserve|@license|[@#]\s*source(?:Mapping)?URL|^!/i;
+  const minimizeOptions = {
+    autoprefixer: false,
+    safe: true,
+    mergeLonghand: false,
+    discardComments: { remove: (comment) => !importantCommentRe.test(comment) }
+  };
+  return [
+    postcssUrl({
+      url: (URL) => {
+        // Only convert root relative URLs, which CSS-Loader won't process into require().
+        if (!URL.startsWith('/') || URL.startsWith('//')) {
+          return URL;
+        }
+        if (deployUrl.match(/:\/\//)) {
+          // If deployUrl contains a scheme, ignore baseHref use deployUrl as is.
+          return `${deployUrl.replace(/\/$/, '')}${URL}`;
+        } else if (baseHref.match(/:\/\//)) {
+          // If baseHref contains a scheme, include it as is.
+          return baseHref.replace(/\/$/, '') +
+            `/${deployUrl}/${URL}`.replace(/\/\/+/g, '/');
+        } else {
+          // Join together base-href, deploy-url and the original URL.
+          // Also dedupe multiple slashes into single ones.
+          return `/${baseHref}/${deployUrl}/${URL}`.replace(/\/\/+/g, '/');
+        }
+      }
+    }),
+    autoprefixer(),
+  ].concat(minimizeCss ? [cssnano(minimizeOptions)] : []);
+};
 
 
 
@@ -81,13 +80,13 @@ module.exports = [{
   },
   "entry": {
     "main": [
-      "./src\\main.ts"
+      "./src/main.ts"
     ],
     "polyfills": [
-      "./src\\polyfills.ts"
+      "./src/polyfills.ts"
     ],
     "styles": [
-      "./src\\styles.css"
+      "./src/styles.css"
     ]
   },
   "output": {
@@ -96,8 +95,7 @@ module.exports = [{
     "chunkFilename": "[id].chunk.js"
   },
   "module": {
-    "rules": [
-      {
+    "rules": [{
         "enforce": "pre",
         "test": /\.js$/,
         "loader": "source-map-loader",
@@ -127,7 +125,7 @@ module.exports = [{
       },
       {
         "exclude": [
-          path.join(process.cwd(), "src\\styles.css")
+          path.join(process.cwd(), "src/styles.css")
         ],
         "test": /\.css$/,
         "use": [
@@ -360,8 +358,7 @@ module.exports = [{
   "plugins": [
     new NoEmitOnErrorsPlugin(),
     new CleanWebpackPlugin(path.join(process.cwd(), "dist")),
-    new CopyWebpackPlugin([
-      {
+    new CopyWebpackPlugin([{
         "context": "src",
         "to": "",
         "from": {
@@ -390,7 +387,7 @@ module.exports = [{
     }),
     new NamedLazyChunksWebpackPlugin(),
     new HtmlWebpackPlugin({
-      "template": "./src\\index.html",
+      "template": "./src/index.html",
       "filename": "./index.html",
       "hash": false,
       "inject": true,
@@ -407,15 +404,13 @@ module.exports = [{
         let leftIndex = entryPoints.indexOf(left.names[0]);
         let rightindex = entryPoints.indexOf(right.names[0]);
         if (leftIndex > rightindex) {
-            return 1;
+          return 1;
+        } else if (leftIndex < rightindex) {
+          return -1;
+        } else {
+          return 0;
         }
-        else if (leftIndex < rightindex) {
-            return -1;
-        }
-        else {
-            return 0;
-        }
-    }
+      }
     }),
     new BaseHrefWebpackPlugin({}),
     new CommonsChunkPlugin({
@@ -429,11 +424,11 @@ module.exports = [{
         "vendor"
       ],
       "minChunks": (module) => {
-                return module.resource
-                    && (module.resource.startsWith(nodeModules)
-                        || module.resource.startsWith(genDirNodeModules)
-                        || module.resource.startsWith(realNodeModules));
-            },
+        return module.resource &&
+          (module.resource.startsWith(nodeModules) ||
+            module.resource.startsWith(genDirNodeModules) ||
+            module.resource.startsWith(realNodeModules));
+      },
       "chunks": [
         "main"
       ]
@@ -498,7 +493,7 @@ module.exports = [{
   },
   "entry": {
     "widget": [
-      "./src\\widget.ts"
+      "./src/widget.ts"
     ]
   },
   "output": {
@@ -512,8 +507,7 @@ module.exports = [{
     libraryTarget: "umd"
   },
   "module": {
-    "rules": [
-      {
+    "rules": [{
         "enforce": "pre",
         "test": /\.js$/,
         "loader": "source-map-loader",
