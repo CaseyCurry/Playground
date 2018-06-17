@@ -1,0 +1,78 @@
+1.0
+•	Decorator via npm package
+•	No DB
+•	Async loading of widget
+•	Widget communication pattern
+•	ESDify
+•	3 static configurable layout
+•	Maximize/Minimize/Drag/Close
+•	Packaged as npm
+
+2.0
+•	Persistence
+
+4.0
+•	Everything from 1.0
+•	Persist layout, widget, state
+•	Support versions of Angular
+•	Aaaaaaaaaaand what else???
+
+
+
+==========
+== TODO ==
+==========
+
+Consume css from widget
+Artifactory? Remove bus.ts from widgets and replace with npm install.
+Are there any modules that should be extracted for re-use?
+package dashboard and inject widgetservice
+ESDify
+Make sure widgets have ids
+unit tests
+compatability tests
+
+
+================
+== TODO Later ==
+================
+
+Dock widget vertically
+Test acccessing sessions from multiple domains
+Undo
+
+
+============================
+== Uncategorized Features ==
+============================
+
+Edit Mode
+Toast Messages
+
+
+===========
+== Notes ==
+===========
+
+Move things from window into local storage maybe. The biggest blocker I can see is how widgets are webpacked into a var.
+Maybe better to pass a handler into render(). But I need to know what widgets are on the page.
+
+Bootstrap versions will probably need to be consistent.
+
+
+======================
+== Dev Instructions ==
+======================
+- Use your widget's index.html to determine the exported widths for the dashboard to use.
+
+- Don't use a common name for your app-root selector. Otherwise it will collide with other widgets when the Angular module is bootstrapped.
+
+- Moving a widget will cause it to be re-rendered.
+
+
+1. Add id='container' to inner-most div in index.html.
+2. Change base href to "/dist/".
+3. Modify main.ts.
+4. Add widget.ts.
+5. Modify webpack config. Including changing the chunk name in CommonsChunkPlugin.
+6. Add webpack.dev.js and update package.json scripts.

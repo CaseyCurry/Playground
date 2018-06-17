@@ -1,0 +1,10 @@
+<h1>
+  {{ title }}
+</h1>
+<div class='col-12'>
+  <input (keyup)='newArchitectOnKeyUp($event)' />
+  <button (click)='addOnClick()'>Add Architect</button>
+  <ul>
+    <li *ngFor='let architect of architects' (click)='architectOnClick(architect)'>{{ architect }}</li>
+  </ul>
+</div>
