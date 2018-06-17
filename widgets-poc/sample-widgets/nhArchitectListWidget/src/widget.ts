@@ -9,7 +9,7 @@ if (environment.production) {
 }
 
 const id = 'd4181c23-4c1f-4c2a-910a-7d383afb9cd9';
-const title = 'Architect List {Angular 5}';
+const title = 'Architect List (Angular 5)';
 const width = {
   xs: 6,
   sm: 5,

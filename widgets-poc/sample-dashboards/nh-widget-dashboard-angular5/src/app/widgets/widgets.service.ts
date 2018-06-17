@@ -1,9 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Widget } from './widget.model';
+import * as ArchitectListWidgetNamespace from '@navihealth/architect-list-widget';
+import * as ArchitectAddressWidgetNamespace from '@navihealth/architect-address-widget';
+const ArchitectListWidget = (ArchitectListWidgetNamespace as any).default;
+const ArchitectAddressWidget = (ArchitectAddressWidgetNamespace as any).default;
 
 @Injectable()
 export class WidgetsService {
-
   constructor() { }
 
   private createRenderFunc(number: number, timeout?: number) {
@@ -13,9 +16,6 @@ export class WidgetsService {
           const content = document.createElement('div');
           content.innerHTML = '<div>widget ' + number + '</div><input />';
           content.style.height = '200px';
-          while (container.lastChild) {
-            container.removeChild(container.lastChild);
-          }
           container.appendChild(content);
           resolve();
         }, (timeout || 2000));
@@ -25,164 +25,116 @@ export class WidgetsService {
 
   getAvailableWidgets() {
     return [
-      Widget.createAvailableWidget(
-        '1',
-        'Widget 1',
-        {
+      Widget.createAvailableWidget(ArchitectListWidget),
+      Widget.createAvailableWidget({
+        id: '1',
+        title: 'Widget 1',
+        width: {
           xs: 12,
           sm: 4
         },
-        '200px',
-        this.createRenderFunc(1)),
-      Widget.createAvailableWidget(
-        '2',
-        'Widget 2',
-        {
+        initialHeight: '200px',
+        render: this.createRenderFunc(1)
+      }),
+      Widget.createAvailableWidget({
+        id: '2',
+        title: 'Widget 2 Fast',
+        width: {
           xs: 12,
           sm: 8
         },
-        '200px',
-        this.createRenderFunc(2, 1)),
-      Widget.createAvailableWidget(
-        '3',
-        'Widget 3',
-        {
+        initialHeight: '200px',
+        render: this.createRenderFunc(2, 1)
+      }),
+      Widget.createAvailableWidget({
+        id: '3',
+        title: 'Widget 3',
+        width: {
           xs: 12,
           sm: 6
         },
-        '200px',
-        this.createRenderFunc(3)),
-      Widget.createAvailableWidget(
-        '4',
-        'Widget 4',
-        {
+        initialHeight: '200px',
+        render: this.createRenderFunc(3)
+      }),
+      Widget.createAvailableWidget({
+        id: '4',
+        title: 'Widget 4 Slow',
+        width: {
           xs: 12,
           sm: 6
         },
-        '200px',
-        this.createRenderFunc(4))
+        initialHeight: '200px',
+        render: this.createRenderFunc(4, 5000)
+      })
     ]
   }
 
   getRenderedWidgets() {
     return [
-      Widget.createRenderedWidget(
-        '1',
-        'Widget 1',
-        {
+      Widget.createRenderedWidget(Object.assign({}, ArchitectListWidget, {
+        minimumWidth: ArchitectListWidget.width,
+        currentWidth: ArchitectListWidget.width
+      })),
+      Widget.createRenderedWidget(Object.assign({}, ArchitectAddressWidget, {
+        minimumWidth: ArchitectAddressWidget.width,
+        currentWidth: ArchitectAddressWidget.width
+      })),
+      Widget.createRenderedWidget({
+        id: '1',
+        title: 'Widget 1 Very Slow',
+        currentWidth: {
           xs: 12,
           sm: 6
         },
-        {
+        minimumWidth: {
           xs: 12,
           sm: 5
         },
-        '200px',
-        this.createRenderFunc(1, 100000)),
-      Widget.createRenderedWidget(
-        '3',
-        'Widget 3',
-        {
+        initialHeight: '200px',
+        render: this.createRenderFunc(1, 100000)
+      }),
+      Widget.createRenderedWidget({
+        id: '3',
+        title: 'Widget 3',
+        currentWidth: {
           xs: 12,
           sm: 6
         },
-        {
+        minimumWidth: {
           xs: 12,
           sm: 3
         },
-        '200px',
-        this.createRenderFunc(3, 1000)),
-      Widget.createRenderedWidget(
-        '1',
-        'Widget 1',
-        {
+        initialHeight: '200px',
+        render: this.createRenderFunc(3, 1000)
+      }),
+      Widget.createRenderedWidget({
+        id: '1',
+        title: 'Widget 1',
+        currentWidth: {
           xs: 12,
           sm: 8
         },
-        {
+        minimumWidth: {
           xs: 12,
           sm: 8
         },
-        '200px',
-        this.createRenderFunc(1)),
-      Widget.createRenderedWidget(
-        '1',
-        'Widget 1',
-        {
+        initialHeight: '200px',
+        render: this.createRenderFunc(1)
+      }),
+      Widget.createRenderedWidget({
+        id: '1',
+        title: 'Widget 1',
+        currentWidth: {
           xs: 12,
           sm: 5
         },
-        {
+        minimumWidth: {
           xs: 12,
           sm: 5
         },
-        '200px',
-        this.createRenderFunc(1)),
-      Widget.createRenderedWidget(
-        '1',
-        'Widget 1',
-        {
-          xs: 12,
-          sm: 7
-        },
-        {
-          xs: 12,
-          sm: 7
-        },
-        '200px',
-        this.createRenderFunc(1)),
-      Widget.createRenderedWidget(
-        '1',
-        'Widget 1',
-        {
-          xs: 12,
-          sm: 4
-        },
-        {
-          xs: 12,
-          sm: 4
-        },
-        '200px',
-        this.createRenderFunc(1)),
-      Widget.createRenderedWidget(
-        '1',
-        'Widget 1',
-        {
-          xs: 12,
-          sm: 4
-        },
-        {
-          xs: 12,
-          sm: 4
-        },
-        '200px',
-        this.createRenderFunc(1)),
-      Widget.createRenderedWidget(
-        '1',
-        'Widget 1',
-        {
-          xs: 12,
-          sm: 4
-        },
-        {
-          xs: 12,
-          sm: 4
-        },
-        '200px',
-        this.createRenderFunc(1)),
-      Widget.createRenderedWidget(
-        '1',
-        'Widget 1',
-        {
-          xs: 12,
-          sm: 4
-        },
-        {
-          xs: 12,
-          sm: 4
-        },
-        '200px',
-        this.createRenderFunc(1))
+        initialHeight: '200px',
+        render: this.createRenderFunc(1)
+      })
     ];
   }
 }

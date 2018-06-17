@@ -13,26 +13,27 @@ export class Widget {
   title: string;
   currentWidth: Width;
   minimumWidth: Width;
+  initialHeight: string;
   render: RenderFunc;
   isHidden: boolean;
-  isExpanded: boolean;
+  isExpanded: boolean = true;
   isFullScreen: boolean = false;
 
-  private constructor(id: string, title: string, currentWidth: Width, minimumWidth: Width, private initialHeight: string, render: RenderFunc, isHidden: boolean) {
+  private constructor(id: string, title: string, currentWidth: Width, minimumWidth: Width, initialHeight: string, render: RenderFunc, isHidden: boolean) {
     this.id = id;
     this.title = title;
     this.currentWidth = currentWidth;
     this.minimumWidth = minimumWidth;
-    this.render = render;
+    this.initialHeight = initialHeight;
+    this.render = (render as any).bind(this);
     this.isHidden = isHidden;
-    this.expand();
   }
 
-  static createAvailableWidget(id: string, title: string, width: Width, initialHeight: string, render: RenderFunc) {
+  static createAvailableWidget({ id, title, width, initialHeight, render }) {
     return new Widget(id, title, width, width, initialHeight, render, false);
   }
 
-  static createRenderedWidget(id: string, title: string, currentWidth: Width, minimumWidth: Width, initialHeight: string, render: RenderFunc) {
+  static createRenderedWidget({ id, title, currentWidth, minimumWidth, initialHeight, render }) {
     return new Widget(id, title, currentWidth, minimumWidth, initialHeight, render, false);
   }
 
@@ -51,10 +52,6 @@ export class Widget {
         });
       },
       true);
-  }
-
-  getInitialHeight(): string {
-    return this.initialHeight;
   }
 
   getCurrentWidth(breakpoint: string) {

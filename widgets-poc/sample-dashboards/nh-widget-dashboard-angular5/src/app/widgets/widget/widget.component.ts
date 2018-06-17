@@ -254,6 +254,10 @@ export class WidgetComponent implements OnInit {
     this.zone.runOutsideAngular(() => {
       const container = this.elementRef.nativeElement.querySelector('.container');
       this.widget.render(container)
+        .then(() => {
+          // Remove the spinner.
+          container.children[0].remove();
+        })
         .catch(error => console.log(error));
     });
   }

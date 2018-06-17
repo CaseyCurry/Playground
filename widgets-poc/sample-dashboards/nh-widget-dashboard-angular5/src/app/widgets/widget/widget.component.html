@@ -2,7 +2,7 @@
   <app-widget-controls [widget]='widget' (mousedown)='onWidgetMouseDown($event)' (touchstart)='onWidgetTouchStart($event)' (close)='onCloseClick()' (fullscreen)='onToggleFullScreenClick()'></app-widget-controls>
   <div [ngClass]='widget.isExpanded || widget.isFullScreen ? "maximized" : "minimized"'>
     <div class='container'>
-      <div [style.height]='widget.getInitialHeight()'>
+      <div [style.height]='widget.initialHeight'>
         <div class='loader'>Loading...</div>
       </div>
     </div>

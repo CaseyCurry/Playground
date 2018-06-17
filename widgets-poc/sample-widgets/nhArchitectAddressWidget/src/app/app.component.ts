@@ -1,7 +1,7 @@
 import { Component, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { BusFactory } from './bus';
 
-interface IAddress {
+export interface IAddress {
   line1: string;
   line2?: string;
   city: string;
@@ -33,7 +33,7 @@ export class AppComponent {
     });
   }
 
-  private getAddress(architect) : IAddress {
+  private getAddress(architect): IAddress {
     switch (architect) {
       case 'Seshan':
         return {

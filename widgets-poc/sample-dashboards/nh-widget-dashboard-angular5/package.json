@@ -21,10 +21,10 @@
     "@angular/platform-browser": "^5.2.0",
     "@angular/platform-browser-dynamic": "^5.2.0",
     "@angular/router": "^5.2.0",
+    "@navihealth/architect-address-widget": "^1.0.5",
+    "@navihealth/architect-list-widget": "^1.1.5",
     "core-js": "^2.4.1",
     "nh-browser-bus": "^1.0.10",
-    "nh-patient-list-via-packaged-angular5": "0.0.4",
-    "nh-patient-list-via-packaged-react": "0.0.10",
     "rxjs": "^5.5.6",
     "zone.js": "^0.8.19"
   },
