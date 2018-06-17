@@ -11,12 +11,14 @@ if (environment.production) {
 const id = 'd4181c23-4c1f-4c2a-910a-7d383afb9cd9';
 const title = 'Architect List (Angular 5)';
 const width = {
-  xs: 6,
-  sm: 5,
-  md: 4
+  xs: 12,
+  sm: 8,
+  md: 6,
+  lg: 5,
+  xl: 4
 };
 const initialHeight = '250px';
-const render = async function(container: HTMLElement) {
+const render = async function(container: Element) {
   return new Promise(async (resolve, reject) => {
     try {
       const appRoot = document.createElement('architect-list-widget');

@@ -5,6 +5,8 @@ declare const _default: {
         xs: number;
         sm: number;
         md: number;
+        lg: number;
+        xl: number;
     };
     initialHeight: string;
     render: (container: HTMLElement) => Promise<{}>;

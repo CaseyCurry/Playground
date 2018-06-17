@@ -180,7 +180,7 @@ var AppComponent = (function () {
 AppComponent.decorators = [
     { type: core.Component, args: [{
                 selector: 'architect-address-widget',
-                template: "\n    <h1>\n      {{ title }}\n    </h1>\n    <div class='col-12'>\n      <label>line 1:</label>\n      <span *ngIf=\"address\">{{ address.line1 }}</span>\n    </div>\n    <div class='col-12'>\n      <label>line 2:</label>\n      <span *ngIf=\"address\">{{ address.line2 }}</span>\n    </div>\n    <div class='col-12 col-sm-5'>\n      <label>city:</label>\n      <span *ngIf=\"address\">{{ address.city }}</span>\n    </div>\n    <div class='col-12 col-sm-3'>\n      <label>state:</label>\n      <span *ngIf=\"address\">{{ address.state }}</span>\n    </div>\n    <div class='col-12 col-sm-4'>\n      <label>postal code:</label>\n      <span *ngIf=\"address\">{{ address.postalCode }}</span>\n    </div>\n    <div class='col-12'>\n      <label>country:</label>\n      <span *ngIf=\"address\">{{ address.country }}</span>\n    </div>\n  ",
+                template: "\n    <div class='col-xs-12'>\n      <label>line 1:</label>\n      <span *ngIf=\"address\">{{ address.line1 }}</span>\n    </div>\n    <div class='col-xs-12'>\n      <label>line 2:</label>\n      <span *ngIf=\"address\">{{ address.line2 }}</span>\n    </div>\n    <div class='row'>\n      <div class='col-8'>\n        <label>city:</label>\n        <span *ngIf=\"address\">{{ address.city }}</span>\n      </div>\n      <div class='col-4'>\n        <label>state:</label>\n        <span *ngIf=\"address\">{{ address.state }}</span>\n      </div>\n    </div>\n    <div class='col-xs-12'>\n      <label>postal code:</label>\n      <span *ngIf=\"address\">{{ address.postalCode }}</span>\n    </div>\n    <div class='col-xs-12'>\n      <label>country:</label>\n      <span *ngIf=\"address\">{{ address.country }}</span>\n    </div>\n  ",
                 styles: ["\n\n  "],
                 changeDetection: core.ChangeDetectionStrategy.OnPush
             },] },
@@ -246,7 +246,9 @@ var title = 'Architect Address (Angular 4)';
 var width = {
     xs: 12,
     sm: 8,
-    md: 6
+    md: 6,
+    lg: 5,
+    xl: 4
 };
 var initialHeight = '250px';
 var render = function (container) {

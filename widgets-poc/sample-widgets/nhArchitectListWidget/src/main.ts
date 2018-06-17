@@ -9,7 +9,7 @@ if (environment.production) {
   enableProdMode();
 }
 
-const bootstrap = async function(container: HTMLElement) {
+const bootstrap = async function(container: Element) {
   return new Promise(async (resolve, reject) => {
     try {
       const appRoot = document.createElement('architect-list-widget');
@@ -22,7 +22,7 @@ const bootstrap = async function(container: HTMLElement) {
   });
 };
 
-const container = document.getElementById('container');
+const container: Element = document.getElementsByClassName('container')[0];
 
 bootstrap(container)
   .catch(error => console.log(error));

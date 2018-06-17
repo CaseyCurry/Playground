@@ -13,7 +13,9 @@ const title = 'Architect Address (Angular 4)';
 const width = {
   xs: 12,
   sm: 8,
-  md: 6
+  md: 6,
+  lg: 5,
+  xl: 4
 };
 const initialHeight = '250px';
 const render = async function(container: HTMLElement) {

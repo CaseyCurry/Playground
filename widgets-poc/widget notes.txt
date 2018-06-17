@@ -26,13 +26,12 @@ update references in dashboard to browser-bus
 Consume css from widget
 Artifactory? Remove bus.ts from widgets and replace with npm install.
 Are there any modules that should be extracted for re-use?
-package dashboard and inject widgetservice
+package dashboard and inject widgets.service
 ESDify
-
+move style in widgets currently to test to ESD instead
 unit tests
 compatability tests
 we should make the supported version of angular peerdependencies in widgets; for now they are whitelisted
-uneject widgets
 use ng-package.json in list widget instead of .js
 cleanup weird namespace requirements importing ng-packagr modules as in widgets.service.ts
 

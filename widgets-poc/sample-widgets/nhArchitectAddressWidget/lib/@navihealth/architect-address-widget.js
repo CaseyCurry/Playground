@@ -149,30 +149,29 @@ AppComponent.decorators = [
     { type: Component, args: [{
                 selector: 'architect-address-widget',
                 template: `
-    <h1>
-      {{ title }}
-    </h1>
-    <div class='col-12'>
+    <div class='col-xs-12'>
       <label>line 1:</label>
       <span *ngIf="address">{{ address.line1 }}</span>
     </div>
-    <div class='col-12'>
+    <div class='col-xs-12'>
       <label>line 2:</label>
       <span *ngIf="address">{{ address.line2 }}</span>
     </div>
-    <div class='col-12 col-sm-5'>
-      <label>city:</label>
-      <span *ngIf="address">{{ address.city }}</span>
+    <div class='row'>
+      <div class='col-8'>
+        <label>city:</label>
+        <span *ngIf="address">{{ address.city }}</span>
+      </div>
+      <div class='col-4'>
+        <label>state:</label>
+        <span *ngIf="address">{{ address.state }}</span>
+      </div>
     </div>
-    <div class='col-12 col-sm-3'>
-      <label>state:</label>
-      <span *ngIf="address">{{ address.state }}</span>
-    </div>
-    <div class='col-12 col-sm-4'>
+    <div class='col-xs-12'>
       <label>postal code:</label>
       <span *ngIf="address">{{ address.postalCode }}</span>
     </div>
-    <div class='col-12'>
+    <div class='col-xs-12'>
       <label>country:</label>
       <span *ngIf="address">{{ address.country }}</span>
     </div>
@@ -234,7 +233,9 @@ const title = 'Architect Address (Angular 4)';
 const width = {
     xs: 12,
     sm: 8,
-    md: 6
+    md: 6,
+    lg: 5,
+    xl: 4
 };
 const initialHeight = '250px';
 const render = function (container) {

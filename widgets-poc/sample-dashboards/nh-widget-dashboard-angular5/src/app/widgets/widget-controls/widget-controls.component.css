@@ -5,6 +5,13 @@
   margin-bottom: 15px;
 }
 
+:host>.title {
+  width: 70%;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
 :host>div:first-of-type {
   float: left;
 }

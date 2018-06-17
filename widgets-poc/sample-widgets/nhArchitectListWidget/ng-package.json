@@ -1,0 +1,8 @@
+{
+  "$schema": "./node_modules/ng-packagr/ng-package.schema.json",
+  "lib": {
+    "entryFile": "./src/widget.ts"
+  },
+  "dest": "lib",
+  "whitelistedNonPeerDependencies": ["angular", "core-js", "rxjs", "zone.js"]
+}

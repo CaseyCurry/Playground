@@ -1,12 +1,9 @@
 {
   "name": "@navihealth/architect-address-widget",
-  "version": "1.0.5",
+  "version": "1.0.7",
   "license": "MIT",
   "scripts": {
     "ng": "ng",
-    "start": "webpack-dev-server --port=4200 --config webpack.dev.js",
-    "build:dev": "webpack --config webpack.dev.js",
-    "build:release": "webpack --config webpack.release.js",
     "test": "karma start ./karma.conf.js",
     "lint": "ng lint",
     "e2e": "protractor ./protractor.conf.js",
