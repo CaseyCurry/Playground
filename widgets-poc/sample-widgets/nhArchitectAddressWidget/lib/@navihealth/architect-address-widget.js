@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, NgModule, enableProdMode } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, NgModule, enableProdMode } from '@angular/core';
 import { platformBrowserDynamic as platformBrowserDynamic$1 } from '@angular/platform-browser-dynamic';
 import { BrowserModule } from '@angular/platform-browser';
 
@@ -89,17 +89,19 @@ const BusFactory = {
 
 class AppComponent {
     /**
-     * @param {?} ref
+     * @param {?} changeDetectorRef
+     * @param {?} elementRef
      */
-    constructor(ref) {
-        this.ref = ref;
+    constructor(changeDetectorRef, elementRef) {
+        this.changeDetectorRef = changeDetectorRef;
+        this.elementRef = elementRef;
         this.title = 'address';
         this.bus = BusFactory.create();
         this.bus.listen({
             eventName: 'architect-selected',
             responder: (event) => {
                 this.address = this.getAddress(event.message.name);
-                ref.detectChanges();
+                changeDetectorRef.detectChanges();
             }
         });
     }
@@ -144,6 +146,12 @@ class AppComponent {
                 };
         }
     }
+    /**
+     * @return {?}
+     */
+    ngAfterContentInit() {
+        this.elementRef.nativeElement.classList.add('architect-address-widget');
+    }
 }
 AppComponent.decorators = [
     { type: Component, args: [{
@@ -177,9 +185,10 @@ AppComponent.decorators = [
     </div>
   `,
                 styles: [`
-
-  `],
-                changeDetection: ChangeDetectionStrategy.OnPush
+    :host.architect-address-widget {
+      color: red;
+    }
+  `]
             },] },
 ];
 /**
@@ -187,6 +196,7 @@ AppComponent.decorators = [
  */
 AppComponent.ctorParameters = () => [
     { type: ChangeDetectorRef, },
+    { type: ElementRef, },
 ];
 
 class AppModule {

@@ -1,4 +1,4 @@
-import { ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectorRef, ElementRef } from '@angular/core';
 export interface IAddress {
     line1: string;
     line2?: string;
@@ -8,10 +8,12 @@ export interface IAddress {
     country: string;
 }
 export declare class AppComponent {
-    private ref;
+    private changeDetectorRef;
+    private elementRef;
     title: string;
     bus: any;
     address: IAddress;
-    constructor(ref: ChangeDetectorRef);
+    constructor(changeDetectorRef: ChangeDetectorRef, elementRef: ElementRef);
     private getAddress(architect);
+    ngAfterContentInit(): void;
 }

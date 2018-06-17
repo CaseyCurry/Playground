@@ -22,17 +22,22 @@
 == TODO ==
 ==========
 
-update references in dashboard to browser-bus
-Consume css from widget
 Artifactory? Remove bus.ts from widgets and replace with npm install.
+update references in dashboard to browser-bus
+
+Consume css from widget
+
 Are there any modules that should be extracted for re-use?
 package dashboard and inject widgets.service
+
 ESDify
 move style in widgets currently to test to ESD instead
+
 unit tests
 compatability tests
+
 we should make the supported version of angular peerdependencies in widgets; for now they are whitelisted
-use ng-package.json in list widget instead of .js
+
 cleanup weird namespace requirements importing ng-packagr modules as in widgets.service.ts
 
 
@@ -43,12 +48,6 @@ cleanup weird namespace requirements importing ng-packagr modules as in widgets.
 Dock widget vertically
 Test acccessing sessions from multiple domains
 Undo
-
-
-============================
-== Uncategorized Features ==
-============================
-
 Edit Mode
 Toast Messages
 
@@ -71,6 +70,8 @@ Bootstrap versions will probably need to be consistent.
 - Don't use a common name for your app-root selector. Otherwise it will collide with other widgets when the Angular module is bootstrapped.
 
 - Moving a widget will cause it to be re-rendered.
+
+- Be sure to make sure your css is scoped beyond Angular's scoping.
 
 1. Add id='container' to inner-most div in index.html.
 2. Change base href to "/dist/".

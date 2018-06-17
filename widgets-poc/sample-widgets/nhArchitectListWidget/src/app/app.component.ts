@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef } from '@angular/core';
 import { BusFactory } from './bus';
 
 @Component({
@@ -12,7 +12,7 @@ export class AppComponent {
   newArchitectName: string;
   bus: any;
 
-  constructor() {
+  constructor(private elementRef: ElementRef) {
     this.title = 'architects';
     this.architects = [
       'Seshan',
@@ -45,6 +45,10 @@ export class AppComponent {
       message: {
         name: architect
       }
-    })
+    });
+  }
+
+  ngAfterContentInit() {
+    this.elementRef.nativeElement.classList.add('architect-list-widget');
   }
 }

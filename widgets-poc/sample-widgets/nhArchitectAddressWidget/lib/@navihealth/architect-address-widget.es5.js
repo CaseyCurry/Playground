@@ -25,7 +25,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, NgModule, enableProdMode } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, NgModule, enableProdMode } from '@angular/core';
 import { platformBrowserDynamic as platformBrowserDynamic$1 } from '@angular/platform-browser-dynamic';
 import { BrowserModule } from '@angular/platform-browser';
 var Bus = (function () {
@@ -116,18 +116,20 @@ var BusFactory = {
 };
 var AppComponent = (function () {
     /**
-     * @param {?} ref
+     * @param {?} changeDetectorRef
+     * @param {?} elementRef
      */
-    function AppComponent(ref) {
+    function AppComponent(changeDetectorRef, elementRef) {
         var _this = this;
-        this.ref = ref;
+        this.changeDetectorRef = changeDetectorRef;
+        this.elementRef = elementRef;
         this.title = 'address';
         this.bus = BusFactory.create();
         this.bus.listen({
             eventName: 'architect-selected',
             responder: function (event) {
                 _this.address = _this.getAddress(event.message.name);
-                ref.detectChanges();
+                changeDetectorRef.detectChanges();
             }
         });
     }
@@ -172,14 +174,19 @@ var AppComponent = (function () {
                 };
         }
     };
+    /**
+     * @return {?}
+     */
+    AppComponent.prototype.ngAfterContentInit = function () {
+        this.elementRef.nativeElement.classList.add('architect-address-widget');
+    };
     return AppComponent;
 }());
 AppComponent.decorators = [
     { type: Component, args: [{
                 selector: 'architect-address-widget',
                 template: "\n    <div class='col-xs-12'>\n      <label>line 1:</label>\n      <span *ngIf=\"address\">{{ address.line1 }}</span>\n    </div>\n    <div class='col-xs-12'>\n      <label>line 2:</label>\n      <span *ngIf=\"address\">{{ address.line2 }}</span>\n    </div>\n    <div class='row'>\n      <div class='col-8'>\n        <label>city:</label>\n        <span *ngIf=\"address\">{{ address.city }}</span>\n      </div>\n      <div class='col-4'>\n        <label>state:</label>\n        <span *ngIf=\"address\">{{ address.state }}</span>\n      </div>\n    </div>\n    <div class='col-xs-12'>\n      <label>postal code:</label>\n      <span *ngIf=\"address\">{{ address.postalCode }}</span>\n    </div>\n    <div class='col-xs-12'>\n      <label>country:</label>\n      <span *ngIf=\"address\">{{ address.country }}</span>\n    </div>\n  ",
-                styles: ["\n\n  "],
-                changeDetection: ChangeDetectionStrategy.OnPush
+                styles: ["\n    :host.architect-address-widget {\n      color: red;\n    }\n  "]
             },] },
 ];
 /**
@@ -187,6 +194,7 @@ AppComponent.decorators = [
  */
 AppComponent.ctorParameters = function () { return [
     { type: ChangeDetectorRef, },
+    { type: ElementRef, },
 ]; };
 var AppModule = (function () {
     function AppModule() {

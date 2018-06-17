@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, ChangeDetectorRef, ElementRef } from '@angular/core';
 import { BusFactory } from './bus';
 
 export interface IAddress {
@@ -13,22 +13,21 @@ export interface IAddress {
 @Component({
   selector: 'architect-address-widget',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  styleUrls: ['./app.component.css']
 })
 export class AppComponent {
   title: string;
   bus: any;
   address: IAddress;
 
-  constructor(private ref: ChangeDetectorRef) {
+  constructor(private changeDetectorRef: ChangeDetectorRef, private elementRef: ElementRef) {
     this.title = 'address';
     this.bus = BusFactory.create();
     this.bus.listen({
       eventName: 'architect-selected',
       responder: (event) => {
         this.address = this.getAddress(event.message.name);
-        ref.detectChanges();
+        changeDetectorRef.detectChanges();
       }
     });
   }
@@ -69,5 +68,9 @@ export class AppComponent {
           country: 'US'
         };
     }
+  }
+
+  ngAfterContentInit() {
+    this.elementRef.nativeElement.classList.add('architect-address-widget');
   }
 }
