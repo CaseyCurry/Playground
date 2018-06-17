@@ -1,0 +1,19 @@
+:host {
+  display: block;
+  cursor: grab;
+  overflow: hidden;
+  margin-bottom: 15px;
+}
+
+:host>div:first-of-type {
+  float: left;
+}
+
+:host>div:last-of-type {
+  float: right;
+  cursor: default;
+}
+
+.fullscreen :host {
+  cursor: default;
+}

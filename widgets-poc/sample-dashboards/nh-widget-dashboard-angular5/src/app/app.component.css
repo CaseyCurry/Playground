@@ -1,0 +1,34 @@
+.header {
+  background: #0057b8;
+  color: white;
+  font-size: 1.3rem;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+
+@media (min-width: 576px) {
+  .header>span:last-of-type {
+    text-align: right;
+  }
+}
+
+.dashboard {
+  min-height: 100%;
+  display: block;
+}
+
+.footer {
+  position: fixed;
+  bottom: 0;
+  background: #0057b8;
+  color: white;
+  width: 100%;
+  font-size: .7rem;
+  padding: 0;
+}
+
+.footer>span {
+  display: inline-block;
+  vertical-align: middle;
+  line-height: 50px;
+}

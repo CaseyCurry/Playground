@@ -1,0 +1,8 @@
+:host {
+  position: absolute;
+}
+
+:host>div {
+  border-right: 1px dotted green;
+  height: 100%;
+}

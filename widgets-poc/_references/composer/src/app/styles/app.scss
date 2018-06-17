@@ -1,0 +1,12 @@
+@import "variables";
+@import "../components/Composer.scss";
+
+body,
+html {
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  font-family: $base-font-family;
+  font-size: $base-font-size;
+  color: $base-font-color;
+}

@@ -1,5 +1,5 @@
 import React from "react";
-import BrowserBus from "nh-browser-bus";
+import busFactory from "nh-browser-bus";
 import AdditionPanel from "./components/Addition-Panel.jsx";
 import List from "./components/List.jsx";
 import "./styles/main.scss";
@@ -15,6 +15,7 @@ const App = class App extends React.Component {
       ]
     };
     this.handleAddPatient = this.handleAddPatient.bind(this);
+    this.bus = busFactory.create();
   }
 
   handleAddPatient(name) {
@@ -24,7 +25,12 @@ const App = class App extends React.Component {
     this.setState({
       patients: this.state.patients.concat(name)
     });
-    BrowserBus.notify({ eventName: "patient-added", message: name });
+    this.bus.notify({
+      eventName: "patient-added",
+      message: {
+        name: name
+      }
+    });
   }
 
   render() {

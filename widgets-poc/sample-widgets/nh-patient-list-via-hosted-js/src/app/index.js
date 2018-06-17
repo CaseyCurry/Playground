@@ -13,11 +13,14 @@ var nhWidgetPatientListViaHostedJs = {
     list.appendChild(pearl);
     container.appendChild(list);
 
-    window.nhBrowserBus.default.listen({
+    console.log(window.nhBrowserBus.default.create());
+    const bus = window.nhBrowserBus.default.create();
+
+    bus.listen({
       eventName: "patient-added",
       respond: function(event) {
         const patient = document.createElement("li");
-        patient.innerHTML = event.message;
+        patient.innerHTML = event.message.name;
         list.appendChild(patient);
       }
     });

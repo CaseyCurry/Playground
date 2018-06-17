@@ -4,10 +4,6 @@ html, body {
   background: lightgray;
 }
 
-.widgets {
-  list-style-type: none;
-}
-
 .widget {
   padding: 0;
 }
@@ -16,7 +12,38 @@ html, body {
   height: 100%;
   margin-left: 10px;
   margin-right: 10px;
-  background-color: white;
+  background: white;
+}
+
+.widget.out-of-focus {
+  opacity: .5;
+}
+
+.widget.resizable>div {
+  margin-right: 10px;
+}
+
+@media screen and (min-width: 768px) {
+  .widget.resizable>div {
+    margin-right: 11px;
+  }
+}
+
+.widget .resizer {
+  border-right: 1px solid lightgray;
+  position: absolute;
+  top: 0;
+  right: -1px;
+}
+
+.widget .resizer:hover {
+  cursor: ew-resize;
+}
+
+.resize-guideline {
+  position: absolute;
+  height: 100%;
+  border-right: 1px dotted blue;
 }
 
 .controls {
@@ -33,6 +60,11 @@ html, body {
   height: 20px;
 }
 
+.placeholder>div {
+  background: darkgray;
+  opacity: .5;
+}
+
 .minimized {
   opacity: 0;
   transition-property: height, opacity;
@@ -43,24 +75,6 @@ html, body {
 .draggable {
   position: absolute;
   pointer-events: none;
-}
-
-.draggable-move {
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
-.draggable-hide {
-  display: none !important;
-}
-
-.placeholder {
-  background-color: lightgray;
-  border: solid 1px lightgray;
 }
 
 .no-highlighting {
@@ -75,4 +89,9 @@ html, body {
   /* Internet Explorer/Edge */
   -ms-user-select: none;
   user-select: none;
+}
+
+.column-marker {
+  position: absolute;
+  visibility: hidden;
 }

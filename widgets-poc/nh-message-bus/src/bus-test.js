@@ -11,7 +11,7 @@ describe("bus test suite", () => {
 
     beforeEach(() => {
       bus = require("./bus.js")
-        .default;
+        .default.create();
       eventName = "TEST_EXECUTED";
     });
 

@@ -1,14 +1,8 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-root',
+  selector: 'app-dashboard',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css'],
-  // host: { '(click)': 'onClick()' }
+  styleUrls: ['./app.component.css']
 })
-export class AppComponent {
-  title = 'app';
-  private onClick() {
-    console.log("ul clicked!");
-  }
-}
+export class AppComponent { }
