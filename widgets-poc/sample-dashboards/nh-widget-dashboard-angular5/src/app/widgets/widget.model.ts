@@ -18,7 +18,7 @@ export class Widget {
   isExpanded: boolean;
   isFullScreen: boolean = false;
 
-  private constructor(id: string, title: string, currentWidth: Width, minimumWidth: Width, render: RenderFunc, isHidden: boolean) {
+  private constructor(id: string, title: string, currentWidth: Width, minimumWidth: Width, private initialHeight: string, render: RenderFunc, isHidden: boolean) {
     this.id = id;
     this.title = title;
     this.currentWidth = currentWidth;
@@ -28,12 +28,12 @@ export class Widget {
     this.expand();
   }
 
-  static createAvailableWidget(id: string, title: string, width: Width, render: RenderFunc) {
-    return new Widget(id, title, width, width, render, false);
+  static createAvailableWidget(id: string, title: string, width: Width, initialHeight: string, render: RenderFunc) {
+    return new Widget(id, title, width, width, initialHeight, render, false);
   }
 
-  static createRenderedWidget(id: string, title: string, currentWidth: Width, minimumWidth: Width, render: RenderFunc) {
-    return new Widget(id, title, currentWidth, minimumWidth, render, false);
+  static createRenderedWidget(id: string, title: string, currentWidth: Width, minimumWidth: Width, initialHeight: string, render: RenderFunc) {
+    return new Widget(id, title, currentWidth, minimumWidth, initialHeight, render, false);
   }
 
   static createHiddenWidget(width: number): Widget {
@@ -42,6 +42,7 @@ export class Widget {
       null,
       { xs: width },
       { xs: width },
+      null,
       (container): Promise<void> => {
         return new Promise(resolve => {
           const content = document.createElement('div');
@@ -50,6 +51,10 @@ export class Widget {
         });
       },
       true);
+  }
+
+  getInitialHeight(): string {
+    return this.initialHeight;
   }
 
   getCurrentWidth(breakpoint: string) {
@@ -88,6 +93,7 @@ export class Widget {
       this.title,
       this.currentWidth,
       this.minimumWidth,
+      this.initialHeight,
       this.render,
       this.isHidden);
   }

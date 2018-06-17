@@ -32,6 +32,7 @@ export class WidgetsService {
           xs: 12,
           sm: 4
         },
+        '200px',
         this.createRenderFunc(1)),
       Widget.createAvailableWidget(
         '2',
@@ -40,6 +41,7 @@ export class WidgetsService {
           xs: 12,
           sm: 8
         },
+        '200px',
         this.createRenderFunc(2, 1)),
       Widget.createAvailableWidget(
         '3',
@@ -48,6 +50,7 @@ export class WidgetsService {
           xs: 12,
           sm: 6
         },
+        '200px',
         this.createRenderFunc(3)),
       Widget.createAvailableWidget(
         '4',
@@ -56,6 +59,7 @@ export class WidgetsService {
           xs: 12,
           sm: 6
         },
+        '200px',
         this.createRenderFunc(4))
     ]
   }
@@ -73,7 +77,8 @@ export class WidgetsService {
           xs: 12,
           sm: 5
         },
-        this.createRenderFunc(1, 1)),
+        '200px',
+        this.createRenderFunc(1, 100000)),
       Widget.createRenderedWidget(
         '3',
         'Widget 3',
@@ -85,6 +90,7 @@ export class WidgetsService {
           xs: 12,
           sm: 3
         },
+        '200px',
         this.createRenderFunc(3, 1000)),
       Widget.createRenderedWidget(
         '1',
@@ -97,6 +103,7 @@ export class WidgetsService {
           xs: 12,
           sm: 8
         },
+        '200px',
         this.createRenderFunc(1)),
       Widget.createRenderedWidget(
         '1',
@@ -109,6 +116,7 @@ export class WidgetsService {
           xs: 12,
           sm: 5
         },
+        '200px',
         this.createRenderFunc(1)),
       Widget.createRenderedWidget(
         '1',
@@ -121,6 +129,7 @@ export class WidgetsService {
           xs: 12,
           sm: 7
         },
+        '200px',
         this.createRenderFunc(1)),
       Widget.createRenderedWidget(
         '1',
@@ -133,6 +142,7 @@ export class WidgetsService {
           xs: 12,
           sm: 4
         },
+        '200px',
         this.createRenderFunc(1)),
       Widget.createRenderedWidget(
         '1',
@@ -145,6 +155,7 @@ export class WidgetsService {
           xs: 12,
           sm: 4
         },
+        '200px',
         this.createRenderFunc(1)),
       Widget.createRenderedWidget(
         '1',
@@ -157,6 +168,7 @@ export class WidgetsService {
           xs: 12,
           sm: 4
         },
+        '200px',
         this.createRenderFunc(1)),
       Widget.createRenderedWidget(
         '1',
@@ -169,6 +181,7 @@ export class WidgetsService {
           xs: 12,
           sm: 4
         },
+        '200px',
         this.createRenderFunc(1))
     ];
   }

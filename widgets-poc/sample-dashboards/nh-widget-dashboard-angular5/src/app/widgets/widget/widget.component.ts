@@ -64,7 +64,13 @@ export class WidgetComponent implements OnInit {
     if (this.notModifiable()) {
       return true;
     }
+    if (!e) {
+      return true;
+    }
     const target = e.target || e.srcElement;
+    if (!target) {
+      return true;
+    }
     if (target.classList.contains('not-grabbable')) {
       return true;
     }
@@ -211,14 +217,25 @@ export class WidgetComponent implements OnInit {
   }
 
   onToggleFullScreenClick() {
-    console.log('toggle');
     this.widget.toggleFullScreen();
+    const thisElement = this.elementRef.nativeElement;
     if (this.widget.isFullScreen) {
-      this.elementRef.nativeElement.classList.add('fullscreen');
+      thisElement.classList.add('fullscreen');
+      // I would prefer to use document.body.scrollTop, but it is broken on
+      // chome/webkit and always returns 0.
+      // https://bugs.chromium.org/p/chromium/issues/detail?id=157855
+      thisElement.style.top = (15 + window.scrollY) + 'px';
+      thisElement.style.bottom = (15 - window.scrollY) + 'px';
+      thisElement.style.left = (0 + window.scrollX) + 'px';
+      thisElement.style.right = (0 - window.scrollX) + 'px';
+
     } else {
-      this.elementRef.nativeElement.classList.remove('fullscreen');
+      thisElement.classList.remove('fullscreen');
+      thisElement.style.top = null;
+      thisElement.style.bottom = null;
+      thisElement.style.left = null;
+      thisElement.style.right = null;
     }
-    console.log('toggle');
     this.fullscreen.emit();
   }
 
@@ -237,10 +254,7 @@ export class WidgetComponent implements OnInit {
     this.zone.runOutsideAngular(() => {
       const container = this.elementRef.nativeElement.querySelector('.container');
       this.widget.render(container)
-        .then(() => {
-          // hide spinner
-        });
-
+        .catch(error => console.log(error));
     });
   }
 
