@@ -1,0 +1,29 @@
+<html>
+
+<head title="Parent">
+  <script>
+    const childOrigin = "http://localhost:8081";
+    let children = [];;
+
+    function openChild() {
+      const child = window.open(`${childOrigin}/src/index.html`);
+      children.push(child);
+    }
+
+    function updateMember(member) {
+      for (let i = 0; i < children.length; i++) {
+        children[i].postMessage({
+          member
+        }, childOrigin);
+      }
+    }
+  </script>
+</head>
+
+<body>
+  This sends the member to the child.
+  <button onclick=openChild()>Open Child</button>
+  <input onblur=updateMember(this.value) />
+</body>
+
+</html>

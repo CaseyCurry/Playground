@@ -1,0 +1,20 @@
+<html>
+
+<head title="Child">
+  <script>
+    window.addEventListener("load", function () {
+      setInterval(function () {
+        document.getElementById("member").innerHTML = document.cookie;
+      }, 1000);
+    });
+  </script>
+</head>
+
+<body>
+  This gets the member cookie.
+  <div id="member">
+
+  </div>
+</body>
+
+</html>

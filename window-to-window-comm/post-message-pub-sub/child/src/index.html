@@ -1,0 +1,21 @@
+<html>
+
+<head title="Child">
+  <script>
+    const parentOrigin = "http://localhost:8080";
+    window.addEventListener("message", function (event) {
+      if (event.origin !== parentOrigin) {
+        return;
+      }
+      document.getElementById("member").innerHTML = event.data.member;
+    });
+  </script>
+</head>
+
+<body>
+  This gets the member from the parent.
+  <div id="member">
+  </div>
+</body>
+
+</html>

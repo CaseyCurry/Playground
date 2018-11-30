@@ -1,0 +1,16 @@
+<html>
+
+<head title="Parent">
+  <script>
+    function setMemberCookie(member) {
+      document.cookie = `member=${member};domain=localhost`;
+    }
+  </script>
+</head>
+
+<body>
+  This sets the member cookie.
+  <input onblur=setMemberCookie(this.value) />
+</body>
+
+</html>
