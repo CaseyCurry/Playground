@@ -1,0 +1,7 @@
+<% files.css.forEach(function (src) { %><link rel="stylesheet" href="<%= src %>"><% }) %>
+<chunk itemprop="bakery">
+  <div id="bakery"></div>
+<% files.js.forEach(function (src) { %>  <script src="<%= src %>"></script><% }) %>
+</chunk>
+
+
